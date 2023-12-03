@@ -1,11 +1,17 @@
 import * as THREE from 'three';
-import { scene } from '../index.js';
-import { Device } from './device.js';
+import { scene } from '../index';
+import { Device } from './device';
 
 export class Laser extends Device {
-    constructor(color, width, position){
+    color: number;
+    width: number;
+    position: number[];
+    geometry: THREE.BufferGeometry;
+    material: THREE.Material;
+
+    constructor(color: number, width: number, position: number[]){
         super(); 
-        
+
         this.color = color;
         this.width = width;  // 0.05
         this.position = position;

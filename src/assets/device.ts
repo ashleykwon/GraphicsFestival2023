@@ -1,4 +1,14 @@
+export type updateFunc = (t: number, device: Device) => any;
+
 export class Device {
+    mode: string;
+    autoFunc: (() => void) | updateFunc;
+    playFunc: (() => void) | updateFunc;
+    playCallback: (() => void) | updateFunc;
+    playStartTime: number;
+    playLength: number;
+    object: any;
+
     constructor(){
         this.mode = 'OFF';
         this.autoFunc = () => {};
@@ -13,13 +23,18 @@ export class Device {
         this.object.visible = false;
     }
 
-    setModeAuto(autoFunc){
+    setModeOn(){
+        this.mode = 'ON';
+        this.object.visible = true;
+    }
+
+    setModeAuto(autoFunc: updateFunc){
         this.mode = 'AUTO';
         if(autoFunc !== undefined) this.autoFunc = autoFunc;
         this.object.visible = true;
     }
 
-    setModePlay(playFunc, playCallback, time){
+    setModePlay(playFunc: updateFunc, playCallback: updateFunc, time: number){
         this.mode = 'PLAY';
         if(playFunc !== undefined) this.playFunc = playFunc;
         if(playCallback !== undefined) this.playCallback = playCallback;
@@ -28,8 +43,12 @@ export class Device {
         this.object.visible = true;
     }
 
-    update(t){
+    update(t: number){
         if(this.mode === 'OFF'){
+            return;
+        } 
+        
+        else if(this.mode === 'ON'){
             return;
         } 
         

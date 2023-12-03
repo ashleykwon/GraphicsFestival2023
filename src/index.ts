@@ -1,15 +1,15 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
-import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
+import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
+import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader';
 
-import { load_object } from '/js/util/object_loader.js';
-import { setupStage, cube } from '/js/scene/setup_stage.js';
-import { setupLights, movingLights, laserLights } from '/js/scene/setup_lights.js';
+import { load_object } from './util/object_loader';
+import { setupStage, cube, pyroDevices } from './scene/setup_stage';
+import { setupLights, movingLights, laserLights } from './scene/setup_lights';
 
 // **********************
 // INITIALIZE THREE.JS
@@ -23,10 +23,10 @@ camera.position.set(0, 3, 15);
 const screenDimensions = [800 * 2, 600 * 2];
 
 const renderer = new THREE.WebGLRenderer({
-    canvas: document.getElementById('main-canvas'),
+    canvas: document.getElementById('main-canvas') as HTMLCanvasElement,
     antialias: true
 });
-renderer.setSize(...screenDimensions);
+renderer.setSize(screenDimensions[0], screenDimensions[1]);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.target = new THREE.Vector3(0, 10, -20);
 controls.update();
@@ -35,9 +35,6 @@ controls.update();
 // **********************
 // SET UP SCENE
 // **********************
-
-
-export const lamps = [];
 
 setupStage();
 setupLights();
@@ -74,16 +71,12 @@ let frameCount = 0;
 const animate = () => {
     movingLights.forEach(ml => ml.update(frameCount));
     laserLights.forEach(l => l.update(frameCount));
+    pyroDevices.forEach(pd => pd.update(frameCount));
 
     cube.rotateX(0.01);
     cube.rotateY(0.01);
     frameCount += 1;
-
-    for(let i = 0; i < lamps.length; i++){
-        const lamp = lamps[i];
-        lamp.rotateZ(Math.sin(frameCount / 60 + Math.PI / 2) / 120);
-    }
-
+    
     controls.update();
     requestAnimationFrame(animate);
     composer.render();
@@ -91,20 +84,21 @@ const animate = () => {
 animate();
 
 
-setInterval(() => {
-    laserLights.forEach(l => l.setModePlay(
-        (t, laser) => {
-            const dt = Math.sin(t / 60) * 0.1;
-            laser.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), dt);
+// setInterval(() => {
+//     let l = laserLights[0];
+//     (l.setModePlay(
+//         (t, laser) => {
+//             const dt = Math.sin(t / 60) * 0.1;
+//             laser.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), dt);
 
-            if((t / 10 | 0) % 2 == 0) laser.object.visible = true;
-            else laser.object.visible = false;
-        },
-        (t, laser) => {
-            laser.object.visible = true;
-        }, 1000)
-    );
-}, 2000);
+//             if((t / 10 | 0) % 2 == 0) laser.object.visible = true;
+//             else laser.object.visible = false;
+//         },
+//         (t, laser) => {
+//             laser.object.visible = true;
+//         }, 1000)
+//     );
+// }, 2000);
 
 // let flip = true;
 // setInterval(() => {
