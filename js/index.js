@@ -9,7 +9,7 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
 
 import { load_object } from '/js/util/object_loader.js';
 import { setupStage, cube } from '/js/scene/setup_stage.js';
-import { setupLights, light1, light2 } from '/js/scene/setup_lights.js';
+import { setupLights, movingLights, laserLights } from '/js/scene/setup_lights.js';
 
 // **********************
 // INITIALIZE THREE.JS
@@ -72,13 +72,8 @@ composer.addPass(outputPass);
 
 let frameCount = 0;
 const animate = () => {
-    const sint = Math.sin(frameCount / 60);
-    const cost = Math.cos(frameCount / 60);
-    const sin2t = Math.sin(frameCount / 60 + Math.PI);
-    const cos2t = Math.cos(frameCount / 60 + Math.PI);
-    light1.position.set(cost * 5, 10, sint * 5);
-    light2.position.set(cos2t * 5, 10, sin2t * 5);
-
+    movingLights.forEach(ml => ml.update(frameCount));
+    laserLights.forEach(l => l.update(frameCount));
 
     cube.rotateX(0.01);
     cube.rotateY(0.01);
@@ -94,3 +89,26 @@ const animate = () => {
     composer.render();
 }
 animate();
+
+
+setInterval(() => {
+    laserLights.forEach(l => l.setModePlay(
+        (t, laser) => {
+            const dt = Math.sin(t / 60) * 0.1;
+            laser.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), dt);
+
+            if((t / 10 | 0) % 2 == 0) laser.object.visible = true;
+            else laser.object.visible = false;
+        },
+        (t, laser) => {
+            laser.object.visible = true;
+        }, 1000)
+    );
+}, 2000);
+
+// let flip = true;
+// setInterval(() => {
+//     movingLights[flip ? 1 : 0].setModeOff();
+//     movingLights[flip ? 0 : 1].setModeAuto();
+//     flip = !flip;
+// }, 500);
