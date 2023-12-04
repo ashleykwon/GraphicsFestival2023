@@ -1,12 +1,8 @@
-// https://entertainmenteffects.co.uk/top-5-most-dazzling-concert-special-effects
-// comet, gerb, mines
-
 import { scene } from '../index';
 import { Device } from './device';
 
 import * as THREE from 'three';
 
-import { range, texture, mix, uv, color, positionLocal, timerLocal, SpriteNodeMaterial } from 'three/examples/jsm/nodes/Nodes';
 
 const vertexShader = `
 attribute float scale;
@@ -34,26 +30,23 @@ void main() {
 }
 `;
 
-export class Pyrotechnic extends Device {
+export class Dome extends Device {
     // particles: THREE.Points<THREE.BufferGeometry<THREE.NormalBufferAttributes>, THREE.ShaderMaterial>;
     constructor(){
         super();
 
-        const SEPARATION = 10, AMOUNTX = 50, AMOUNTY = 50;
+        const SEPARATION = 10, AMOUNTX = 50 * 1.6, AMOUNTY = 50 * 1.6;
         const numParticles = AMOUNTX * AMOUNTY;
-        const positions = new Float32Array( numParticles * 3 );
-        const scales = new Float32Array( numParticles );
+        const positions = new Float32Array(numParticles * 3);
+        const scales = new Float32Array(numParticles);
 
         let i = 0, j = 0;
-
-        for ( let ix = 0; ix < AMOUNTX; ix ++ ) {
-            for ( let iy = 0; iy < AMOUNTY; iy ++ ) {
-                positions[ i ] = ix * SEPARATION - ( ( AMOUNTX * SEPARATION ) / 2 ); 
-                positions[ i + 1 ] = 0;
-                positions[ i + 2 ] = iy * SEPARATION - ( ( AMOUNTY * SEPARATION ) / 2 ); 
-
-                scales[ j ] = 1;
-
+        for(let ix = 0; ix < AMOUNTX; ix ++) {
+            for(let iy = 0; iy < AMOUNTY; iy++) {
+                positions[i] = ix * SEPARATION - ((AMOUNTX * SEPARATION) / 2); 
+                positions[i + 1] = 0;
+                positions[i + 2] = iy * SEPARATION - ((AMOUNTY * SEPARATION) / 2); 
+                scales[j] = 1;
                 i += 3;
                 j ++;
             }
@@ -75,27 +68,25 @@ export class Pyrotechnic extends Device {
 
         this.setModeAuto((t: number, device: Device) => {
             t = t / 60
-            const d = device as Pyrotechnic;
+            const d = device as Dome;
             let i = 0, j = 0;
 
             const positions = d.object.geometry.attributes.position.array;
             const scales = d.object.geometry.attributes.scale.array;
 
-            for ( let ix = 0; ix < AMOUNTX; ix ++ ) {
-                for ( let iy = 0; iy < AMOUNTY; iy ++ ) {
+            for (let ix = 0; ix < AMOUNTX; ix ++) {
+                for (let iy = 0; iy < AMOUNTY; iy ++) {
+                    positions[i + 1] = 
+                        (Math.sin((ix + t) * 0.3) + Math.sin((iy + t) * 0.5)) * 5
+                        - ((ix - AMOUNTX/2)**2 + (iy - AMOUNTY/2)**2) * 0.2
+                        + 200;
 
-                    positions[i + 1] = (( Math.sin( ( ix + t ) * 0.3 ) * 50 ) +
-                                    ( Math.sin( ( iy + t ) * 0.5 ) * 50 )) / 25 + 20
-                                    + ((ix - AMOUNTX/2)**2 + (iy - AMOUNTY/2)**2)**(0.5) * 10;
-
-                    scales[j] = (( Math.sin( ( ix + t ) * 0.3 ) + 1 ) * 20 +
-                                    ( Math.sin( ( iy + t ) * 0.5 ) + 1 ) * 20) / 20;
+                    scales[j] = ((Math.sin((ix + t) * 0.3) + 1) * 20 +
+                                    (Math.sin((iy + t) * 0.5) + 1) * 20) / 20;
 
                     i += 3;
-                    j ++;
-
+                    j++;
                 }
-
             }
 
             d.object.geometry.attributes.position.needsUpdate = true;

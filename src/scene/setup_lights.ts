@@ -57,4 +57,6 @@ export const setupLights = () => {
         else laserFan.object.visible = false;
     });
     laserLights.push(laserfan2)
+
+    laserLights.forEach(l => l.setModeOff())
 }

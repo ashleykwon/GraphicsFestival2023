@@ -8,7 +8,7 @@ import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
 import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader';
 
 import { load_object } from './util/object_loader';
-import { setupStage, cube, pyroDevices } from './scene/setup_stage';
+import { setupStage, cube, pyroDevices, otherDevices } from './scene/setup_stage';
 import { setupLights, movingLights, laserLights } from './scene/setup_lights';
 
 // **********************
@@ -18,7 +18,7 @@ import { setupLights, movingLights, laserLights } from './scene/setup_lights';
 export const scene = new THREE.Scene();
 scene.fog = new THREE.FogExp2(0x000000, 0.025);
 
-const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.01, 1000 );
 camera.position.set(0, 3, 15);
 const screenDimensions = [800 * 2, 600 * 2];
 
@@ -72,6 +72,7 @@ const animate = () => {
     movingLights.forEach(ml => ml.update(frameCount));
     laserLights.forEach(l => l.update(frameCount));
     pyroDevices.forEach(pd => pd.update(frameCount));
+    otherDevices.forEach(d => d.update(frameCount))
 
     cube.rotateX(0.01);
     cube.rotateY(0.01);
@@ -104,5 +105,14 @@ animate();
 // setInterval(() => {
 //     movingLights[flip ? 1 : 0].setModeOff();
 //     movingLights[flip ? 0 : 1].setModeAuto();
+//     flip = !flip;
+// }, 500);
+
+// let flip = true;
+// setInterval(() => {
+//     pyroDevices.forEach(pd => {
+//         if(flip) pd.setModeOff();
+//         else pd.setModeAuto();
+//     });
 //     flip = !flip;
 // }, 500);

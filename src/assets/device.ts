@@ -28,7 +28,7 @@ export class Device {
         this.object.visible = true;
     }
 
-    setModeAuto(autoFunc: updateFunc){
+    setModeAuto(autoFunc?: updateFunc){
         this.mode = 'AUTO';
         if(autoFunc !== undefined) this.autoFunc = autoFunc;
         this.object.visible = true;
