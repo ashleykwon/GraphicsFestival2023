@@ -90,6 +90,15 @@ const animate = () => {
 }
 animate();
 
+let flip = false;
+setInterval(() => {
+    const ml = movingLights[2]
+    if(flip) ml.setModeOn();
+    else ml.setModeOff();
+
+    flip = !flip;
+}, 500);
+
 // setInterval(() => {
 //     pyroDevices.forEach(pd => {
 //         pd.emitParticles = true;

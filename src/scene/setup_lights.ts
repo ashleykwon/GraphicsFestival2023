@@ -3,8 +3,9 @@ import { MovingLight } from '../assets/create_moving_light';
 import { Laser } from '../assets/create_laser';
 import { LaserFan } from '../assets/create_laser_fan';
 import { scene } from '../index';
+import { SpotLight } from '../assets/create_spot_light';
 
-export let movingLights : MovingLight[] = [];
+export let movingLights : (MovingLight | SpotLight)[] = [];
 export let laserLights: (Laser | LaserFan)[] = [];
 
 export const setupLights = () => {
@@ -63,4 +64,13 @@ export const setupLights = () => {
     laserLights.push(laserfan2)
 
     laserLights.forEach(l => l.setModeOff())
+
+    // ************
+    // spot lights
+    const spotlight1 = new SpotLight(
+        0xffff00, 0.2, 
+        [-4, 8, -2], [1, -1, 0]
+    );
+    spotlight1.setModeOn(); 
+    movingLights.push(spotlight1);
 }
