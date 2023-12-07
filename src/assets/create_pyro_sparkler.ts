@@ -48,6 +48,10 @@ export class PyroSparkler extends Device {
     position: number[];
     numParticles: number;
     height: number;
+    particleSimStep: (t: number, device: Device) => void;
+    emitParticles: boolean;
+    framesPassed: number;
+    resetSim: (device: Device) => void;
     
     constructor(position: number[], numParticles: number, height: number){
         super();
@@ -91,7 +95,13 @@ export class PyroSparkler extends Device {
         this.object.frustumCulled = false;
         scene.add(this.object);
 
-        this.setModeAuto((t: number, device: Device) => {
+        this.framesPassed = 0;
+
+        this.resetSim = (device: Device) => {
+
+        }
+        
+        this.particleSimStep = (t: number, device: Device) => {
             if(!this.object.visible) return;
 
             t = t / 60
@@ -122,6 +132,10 @@ export class PyroSparkler extends Device {
 
             d.object.geometry.attributes.position.needsUpdate = true;
             d.object.geometry.attributes.scale.needsUpdate = true;
-        });
+        };
+
+        this.emitParticles = true;
+
+        this.setModeOff();
     }
 }

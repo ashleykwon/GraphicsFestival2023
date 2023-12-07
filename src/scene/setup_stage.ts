@@ -13,13 +13,17 @@ export let otherDevices : Device[] = [];
 
 export const setupStage = () => {
     const pyro1 = new PyroSparkler([-8, 0, 0], 800, 6);
+    pyro1.setModeOn();
     pyroDevices.push(pyro1)
     const pyro2 = new PyroSparkler([8, 0, 0], 800, 6);
+    pyro2.setModeOn();
     pyroDevices.push(pyro2)
 
     const pyro3 = new PyroJet([-4, 0, 0], 800, 10);
+    pyro3.setModeOn();
     pyroDevices.push(pyro3)
     const pyro4 = new PyroJet([4, 0, 0], 800, 10);
+    pyro4.setModeOn();
     pyroDevices.push(pyro4)
 
     // const dome = new Dome();

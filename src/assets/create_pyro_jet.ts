@@ -76,6 +76,10 @@ export class PyroJet extends Device {
     position: number[];
     numParticles: number;
     height: number;
+    particleSimStep: (t: number, device: Device) => void;
+    emitParticles: boolean;
+    framesPassed: number;
+    resetSim: (device: Device) => void;
     
     constructor(position: number[], numParticles: number, height: number){
         super();
@@ -124,9 +128,15 @@ export class PyroJet extends Device {
         this.object.frustumCulled = false;
         scene.add(this.object);
 
-        let framesPassed = 0;
-        this.setModeAuto((t: number, device: Device) => {
-            framesPassed += 4;
+        this.framesPassed = 0;
+
+        let shouldResetSim = false;
+        this.resetSim = (device: Device) => {
+            shouldResetSim = true;
+        }
+
+        this.particleSimStep = ((t: number, device: Device) => {
+            this.framesPassed += 4;
             t = t / 60
             const d = device as PyroJet;
             let i = 0, j = 0;
@@ -138,30 +148,54 @@ export class PyroJet extends Device {
             const p1 = this.position[1];
             const p2 = this.position[2];
 
+            let startCount = 0;
             for(let n = 0; n < NUM_PARTICLES; n++) {
-                if(n > framesPassed) break;
+                if(positions[i + 1] === p1) startCount += 1;
+
+                if(startCount > 8 && positions[i + 1] === p1){
+
+                } else if(!this.emitParticles && positions[i + 1] === p1){
+
+                } 
                 
-                const plumeHeightSq = (p0 - positions[i]) ** 2 + (p1 - positions[i + 1]) ** 2 + (p2 - positions[i + 2]) ** 2
-                const maxHeight = this.height**2;
-                const ratio = plumeHeightSq / maxHeight; // from 0 to 1
+                else {
+                    const plumeHeightSq = (p0 - positions[i]) ** 2 + (p1 - positions[i + 1]) ** 2 + (p2 - positions[i + 2]) ** 2
+                    const maxHeight = this.height**2;
+                    const ratio = plumeHeightSq / maxHeight; // from 0 to 1
 
-                positions[i] += (Math.random() - 0.5) * (0.1 + ratio * 0.3);
-                positions[i + 1] += Math.random() * 0.15 // * 0.1;
-                positions[i + 2] += (Math.random() - 0.5) * (0.1 + ratio * 0.3);
+                    positions[i] += (Math.random() - 0.5) * (0.1 + ratio * 0.3);
+                    positions[i + 1] += Math.random() * 0.15 // * 0.1;
+                    positions[i + 2] += (Math.random() - 0.5) * (0.1 + ratio * 0.3);
 
 
-                if((this.height**2) < plumeHeightSq){
-                    positions[i] = p0;
-                    positions[i + 1] = p1;
-                    positions[i + 2] = p2;
+                    if((this.height**2) < plumeHeightSq){
+                        positions[i] = p0;
+                        positions[i + 1] = p1;
+                        positions[i + 2] = p2;
+                    } 
+
+                    if(shouldResetSim){
+                        positions[i] = p0;
+                        positions[i + 1] = p1;
+                        positions[i + 2] = p2;
+                    }
                 }
     
                 i += 3;
                 j ++;
             }
 
+            if(shouldResetSim) {
+                this.framesPassed = 0;
+                shouldResetSim = false;
+            }
+
             d.object.geometry.attributes.position.needsUpdate = true;
             d.object.geometry.attributes.scale.needsUpdate = true;
         });
+        
+        this.emitParticles = true;
+
+        this.setModeOff();
     }
 }
