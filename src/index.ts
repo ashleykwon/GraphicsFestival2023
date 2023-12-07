@@ -15,6 +15,7 @@ import { setupLights, movingLights, laserLights } from './scene/setup_lights';
 // INITIALIZE THREE.JS
 // **********************
 
+// important objects are scene and camera
 export const scene = new THREE.Scene();
 scene.fog = new THREE.FogExp2(0x000000, 0.025);
 
@@ -69,6 +70,7 @@ composer.addPass(outputPass);
 
 let frameCount = 0;
 const animate = () => {
+    // updating assets
     movingLights.forEach(ml => ml.update(frameCount));
     laserLights.forEach(l => l.update(frameCount));
     pyroDevices.forEach(pd => pd.update(frameCount));
@@ -78,9 +80,10 @@ const animate = () => {
     cube.rotateY(0.01);
     frameCount += 1;
     
+    // three.js needs these funcitons to be called every time we render the scene
     controls.update();
-    requestAnimationFrame(animate);
     composer.render();
+    requestAnimationFrame(animate);
 }
 animate();
 

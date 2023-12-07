@@ -65,7 +65,7 @@ void main() {
     if(dh > 0.1) discard; 
 
     if(particle_brightness < 0.5){
-        gl_FragColor = vec4(color, 1.0) * particle_brightness;
+        gl_FragColor = vec4(vec3(1.0, 0.3, 0.0), 1.0) * particle_brightness;
     } else {
         gl_FragColor = vec4(mix(color, vec3(1.0), particle_brightness - 0.5), 1.0);
     }

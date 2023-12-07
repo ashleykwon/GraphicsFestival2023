@@ -38,19 +38,20 @@ export const setupStage = () => {
     scene.add(cube);
 
     load_object(
-        '/assets/truss_full.obj', 
-        (object: THREE.Object3D) => {
+        '/assets/truss_full.obj',
+        (object:  THREE.Object3D) => {
             let bb = new THREE.Box3().setFromObject(object);
             let size = bb.getSize(new THREE.Vector3()); 
+            
             object.scale.set(10 / size.x, 10 / size.x, 10 / size.x)
             object.rotateX(-Math.PI / 2);
             object.rotateZ(-Math.PI / 2);
-        },
+        }, 
         new THREE.MeshStandardMaterial({
             color: 0xdddddd,
             roughness: 0
         })
-    );
+    )
 
     load_object(
         '/assets/stage.obj', 

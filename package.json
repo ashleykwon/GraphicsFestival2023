@@ -4,7 +4,7 @@
   "description": "1. Run `http-server -c-1` in root directory to start up local HTTP server to server Three.js webpage\r 2. Open `/js/index.html` in the browser and *wait* for CDN to finish downloading Three.js library files\r 3. Music graphics time!",
   "main": "./dist/bundle.js",
   "scripts": {
-    "build": "webpack --config webpack.js --watch",
+    "build": "webpack --config webpack.config.js --watch",
     "run": "http-server -c-1"
   },
   "devDependencies": {
