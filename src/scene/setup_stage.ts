@@ -5,26 +5,31 @@ import { PyroSparkler } from '../assets/create_pyro_sparkler';
 import { Device } from '../assets/device';
 import { Dome } from '../assets/create_dome';
 import { PyroJet } from '../assets/create_pyro_jet';
+import { SmokeJet } from '../assets/create_smoke_jet';
 
 export let cube: THREE.Mesh;
 
-export let pyroDevices : (PyroSparkler | PyroJet)[] = [];
+export let pyroDevices : (PyroSparkler | PyroJet | SmokeJet)[] = [];
 export let otherDevices : Device[] = [];
 
 export const setupStage = () => {
-    const pyro1 = new PyroSparkler([-8, 0, 0], 800, 6);
-    pyro1.setModeOn();
-    pyroDevices.push(pyro1)
-    const pyro2 = new PyroSparkler([8, 0, 0], 800, 6);
-    pyro2.setModeOn();
-    pyroDevices.push(pyro2)
+    // const pyro1 = new PyroSparkler([-8, 0, 0], 800, 6);
+    // pyro1.setModeOn();
+    // pyroDevices.push(pyro1)
+    // const pyro2 = new PyroSparkler([8, 0, 0], 800, 6);
+    // pyro2.setModeOn();
+    // pyroDevices.push(pyro2)
 
-    const pyro3 = new PyroJet([-4, 0, 0], 800, 10);
-    pyro3.setModeOn();
-    pyroDevices.push(pyro3)
-    const pyro4 = new PyroJet([4, 0, 0], 800, 10);
-    pyro4.setModeOn();
-    pyroDevices.push(pyro4)
+    // const pyro3 = new PyroJet([-4, 0, 0], 2*800, 10);
+    // pyro3.setModeOn();
+    // pyroDevices.push(pyro3)
+    // const pyro4 = new PyroJet([4, 0, 0], 2*800, 10);
+    // pyro4.setModeOn();
+    // pyroDevices.push(pyro4);
+    
+    const smoke1 = new SmokeJet([4, 0, 0], 1600, 8);
+    smoke1.setModeOn();
+    pyroDevices.push(smoke1);
 
     // const dome = new Dome();
     // otherDevices.push(dome);

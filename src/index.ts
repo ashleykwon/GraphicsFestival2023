@@ -90,14 +90,14 @@ const animate = () => {
 }
 animate();
 
-setInterval(() => {
-    pyroDevices.forEach(pd => {
-        pd.emitParticles = true;
-        setTimeout(() => {
-            pd.emitParticles = false;
-        }, 300);
-    })
-}, 1000);
+// setInterval(() => {
+//     pyroDevices.forEach(pd => {
+//         pd.emitParticles = true;
+//         setTimeout(() => {
+//             pd.emitParticles = false;
+//         }, 300);
+//     })
+// }, 1000);
 
 // setInterval(() => {
 //     let l = laserLights[0];
