@@ -124,6 +124,12 @@ export class PyroJet extends Device {
             fragmentShader: fragmentShader
         });
 
+        const machineGeometry = new THREE.BoxGeometry(2, 2, 2);
+        const machineMaterial = new THREE.MeshStandardMaterial({color: 0xaaaaaa});
+        const machine = new THREE.Mesh(machineGeometry, machineMaterial);
+        machine.position.set(position[0], position[1], position[2]);
+        scene.add(machine);
+
         this.object = new THREE.Points(geometry, material);
         this.object.frustumCulled = false;
         scene.add(this.object);

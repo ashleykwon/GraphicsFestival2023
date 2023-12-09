@@ -12,21 +12,41 @@ export const setupLights = () => {
     // ************
     // moving lights
 
-    const light1 = new MovingLight(0x0000ff, 100.0);
+    const light1 = new MovingLight(0x00ffff, 500.0);
     light1.setModeAuto((t, light) => {
         const sint = Math.sin(t / 60);
         const cost = Math.cos(t / 60);
-        light.object.position.set(cost * 5, 10, sint * 5);
+        light.object.position.set(cost * 5, 30, sint * 5);
     })
     movingLights.push(light1)
 
-    const light2 = new MovingLight(0xff0000, 100.0);
+    const light2 = new MovingLight(0x00ff00, 500.0);
     light2.setModeAuto((t, light) => {
         const sint = Math.sin(t / 60 + Math.PI);
         const cost = Math.cos(t / 60 + Math.PI);
-        light.object.position.set(cost * 5, 10, sint * 5);
+        light.object.position.set(cost * 5, 30, sint * 5);
     })
     movingLights.push(light2)
+
+    const light3 = new MovingLight(0xffffff, 100.0);
+    light3.object.position.set(24.5, 10, 83);
+    light3.setModeOn();
+    movingLights.push(light3)
+
+    const light4 = new MovingLight(0xffffff, 100.0);
+    light4.object.position.set(24.5, 10, -83);
+    light4.setModeOn();
+    movingLights.push(light4)
+
+    const light_left_truss = new MovingLight(0xffffff, 100.0);
+    light_left_truss.object.position.set(-13, 10, 64);
+    light_left_truss.setModeOn();
+    movingLights.push(light_left_truss)
+
+    const light_right_truss = new MovingLight(0xffffff, 100.0);
+    light_right_truss.object.position.set(-13, 10, -64);
+    light_right_truss.setModeOn();
+    movingLights.push(light_right_truss)
 
     // ************
     // laser lights
@@ -67,10 +87,10 @@ export const setupLights = () => {
 
     // ************
     // spot lights
-    const spotlight1 = new SpotLight(
-        0xffff00, 0.2, 
-        [-4, 8, -2], [1, -1, 0]
-    );
-    spotlight1.setModeOn(); 
-    movingLights.push(spotlight1);
+    // const spotlight1 = new SpotLight(
+    //     0xffff00, 0.2, 
+    //     [-4, 8, -2], [1, -1, 0]
+    // );
+    // spotlight1.setModeOn(); 
+    // movingLights.push(spotlight1);
 }

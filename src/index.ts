@@ -10,6 +10,7 @@ import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader';
 import { load_object } from './util/object_loader';
 import { setupStage, cube, pyroDevices, otherDevices } from './scene/setup_stage';
 import { setupLights, movingLights, laserLights } from './scene/setup_lights';
+import { cameraPosition } from 'three/examples/jsm/nodes/Nodes';
 
 // **********************
 // INITIALIZE THREE.JS
@@ -17,10 +18,10 @@ import { setupLights, movingLights, laserLights } from './scene/setup_lights';
 
 // important objects are scene and camera
 export const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x000000, 0.025);
+scene.fog = new THREE.FogExp2(0x000000, 0.005);
 
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.01, 1000 );
-camera.position.set(0, 3, 15);
+camera.position.set(60, 10, 0);
 const screenDimensions = [800 * 2, 600 * 2];
 
 const renderer = new THREE.WebGLRenderer({
@@ -29,7 +30,7 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.setSize(screenDimensions[0], screenDimensions[1]);
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.target = new THREE.Vector3(0, 10, -20);
+controls.target = new THREE.Vector3(0, 30, 0);
 controls.update();
 
 
@@ -68,6 +69,14 @@ composer.addPass(outputPass);
 // RENDER LOOP
 // **********************
 
+const camData = localStorage.getItem("cameraPos");
+if(camData){
+    const d = JSON.parse(camData)
+    camera.position.set(d.position.x, d.position.y, d.position.z);
+    camera.rotation.set(d.rotation._x, d.rotation._y, d.rotation._z);
+    controls.target = new THREE.Vector3(d.lookAt.x, d.lookAt.y, d.lookAt.z)
+}
+
 let frameCount = 0;
 const animate = () => {
     // updating assets
@@ -79,25 +88,31 @@ const animate = () => {
     });
     otherDevices.forEach(d => d.update(frameCount))
 
-    cube.rotateX(0.01);
-    cube.rotateY(0.01);
-    frameCount += 1;
+    // cube.rotateX(0.01);
+    // cube.rotateY(0.01);
+    console.log(camera, controls.target)
+    localStorage.setItem("cameraPos", JSON.stringify({
+        position: camera.position,
+        rotation: camera.rotation,
+        lookAt: controls.target
+    }));
     
     // three.js needs these funcitons to be called every time we render the scene
     controls.update();
     composer.render();
+    frameCount += 1;
     requestAnimationFrame(animate);
 }
 animate();
 
-let flip = false;
-setInterval(() => {
-    const ml = movingLights[2]
-    if(flip) ml.setModeOn();
-    else ml.setModeOff();
+// let flip = false;
+// setInterval(() => {
+//     const ml = movingLights[2]
+//     if(flip) ml.setModeOn();
+//     else ml.setModeOff();
 
-    flip = !flip;
-}, 500);
+//     flip = !flip;
+// }, 500);
 
 // setInterval(() => {
 //     pyroDevices.forEach(pd => {

@@ -13,75 +13,86 @@ export let pyroDevices : (PyroSparkler | PyroJet | SmokeJet)[] = [];
 export let otherDevices : Device[] = [];
 
 export const setupStage = () => {
-    // const pyro1 = new PyroSparkler([-8, 0, 0], 800, 6);
-    // pyro1.setModeOn();
-    // pyroDevices.push(pyro1)
-    // const pyro2 = new PyroSparkler([8, 0, 0], 800, 6);
-    // pyro2.setModeOn();
-    // pyroDevices.push(pyro2)
+    const pyro1 = new PyroSparkler([2, 3, -10], 800, 8);
+    pyroDevices.push(pyro1)
+    const pyro2 = new PyroSparkler([2, 3, 10], 800, 8);
+    pyroDevices.push(pyro2)
+    const pyroC = new PyroSparkler([2, 3, -30], 800, 8);
+    pyroDevices.push(pyroC)
+    const pyroD = new PyroSparkler([2, 3, 30], 800, 8);
+    pyroDevices.push(pyroD)
 
-    // const pyro3 = new PyroJet([-4, 0, 0], 2*800, 10);
-    // pyro3.setModeOn();
-    // pyroDevices.push(pyro3)
-    // const pyro4 = new PyroJet([4, 0, 0], 2*800, 10);
-    // pyro4.setModeOn();
-    // pyroDevices.push(pyro4);
+    pyro1.setModeOn();
+    pyro2.setModeOn();
+    pyroC.setModeOn();
+    pyroD.setModeOn();
+
+    const pyro3 = new PyroJet([2, 3, -20], 2*800, 10);
+    pyro3.setModeOn();
+    pyroDevices.push(pyro3)
+    const pyro4 = new PyroJet([2, 3, 20], 2*800, 10);
+    pyro4.setModeOn();
+    pyroDevices.push(pyro4);
+    const pyro5 = new PyroJet([2, 3, -40], 2*800, 10);
+    pyro5.setModeOn();
+    pyroDevices.push(pyro5)
+    const pyro6 = new PyroJet([2, 3, 40], 2*800, 10);
+    pyro6.setModeOn();
+    pyroDevices.push(pyro6);
     
-    const smoke1 = new SmokeJet([4, 0, 0], 1600, 8);
-    smoke1.setModeOn();
-    pyroDevices.push(smoke1);
+    // const smoke1 = new SmokeJet([4, 0, 0], 1600, 8);
+    // smoke1.setModeOn();
+    // pyroDevices.push(smoke1);
 
     // const dome = new Dome();
     // otherDevices.push(dome);
     
-    const geometry = new THREE.BoxGeometry(2, 2, 2); 
-    const material = new THREE.MeshStandardMaterial({
-        color: 0x00ff00, 
-        emissive: 0x00ffff,
-        emissiveIntensity: 1,
-        wireframe: true,
-        wireframeLinewidth: 2
-    }); 
-    cube = new THREE.Mesh(geometry, material); 
-    cube.position.setY(3)
-    scene.add(cube);
+    // const geometry = new THREE.BoxGeometry(2, 2, 2); 
+    // const material = new THREE.MeshStandardMaterial({
+    //     color: 0x00ff00, 
+    //     emissive: 0x00ffff,
+    //     emissiveIntensity: 1,
+    //     wireframe: true,
+    //     wireframeLinewidth: 2
+    // }); 
+    // cube = new THREE.Mesh(geometry, material); 
+    // cube.position.setY(3)
+    // scene.add(cube);
 
+    const loaded_scale = 0.3;
     load_object(
-        '/assets/truss_full.obj',
+        '/assets/stage_structure_solid_only.obj',
         (object:  THREE.Object3D) => {
             let bb = new THREE.Box3().setFromObject(object);
             let size = bb.getSize(new THREE.Vector3()); 
             
-            object.scale.set(10 / size.x, 10 / size.x, 10 / size.x)
-            object.rotateX(-Math.PI / 2);
-            object.rotateZ(-Math.PI / 2);
+            object.scale.set(loaded_scale, loaded_scale, loaded_scale);
         }, 
         new THREE.MeshStandardMaterial({
             color: 0xdddddd,
-            roughness: 0
+            roughness: 1
         })
     )
 
     load_object(
-        '/assets/stage.obj', 
+        '/assets/stage_structure_truss_only.obj', 
         (object: THREE.Object3D) => {
             let bb = new THREE.Box3().setFromObject(object);
             let size = bb.getSize(new THREE.Vector3()); 
-            object.scale.set(15 / size.x, 15 / size.x, 15 / size.x)
-            object.rotateX(-Math.PI / 2);
-            object.rotateZ(-Math.PI / 2);
-            object.position.set(0, -0.1, -2.5);
+
+            object.scale.set(loaded_scale, loaded_scale, loaded_scale);
         },
         new THREE.MeshStandardMaterial({
             color: 0x444444,
-            roughness: 1
+            roughness: 0
         })
     );
 
     const groundGeometry = new THREE.PlaneGeometry(1000, 1000, 1, 1);
-    const groundMaterial = new THREE.MeshBasicMaterial({color: 0x000000});
+    // const groundMaterial = new THREE.MeshBasicMaterial({color: 0x000000});
+    const groundMaterial = new THREE.MeshStandardMaterial({color: 0x000000});
     const ground = new THREE.Mesh(groundGeometry, groundMaterial)
     ground.rotateX(-Math.PI / 2);
-    ground.translateZ(-100)
+    ground.translateZ(-10)
     scene.add(ground)
 }
