@@ -88,16 +88,10 @@ const animate = () => {
     });
     otherDevices.forEach(d => d.update(frameCount))
 
-    // cube.rotateX(0.01);
-    // cube.rotateY(0.01);
-    console.log(camera, controls.target)
-    localStorage.setItem("cameraPos", JSON.stringify({
-        position: camera.position,
-        rotation: camera.rotation,
-        lookAt: controls.target
-    }));
+    cube.rotateX(0.01);
+    cube.rotateY(0.01);
+    frameCount += 1;
     
-    // three.js needs these funcitons to be called every time we render the scene
     controls.update();
     composer.render();
     frameCount += 1;

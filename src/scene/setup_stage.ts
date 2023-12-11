@@ -7,6 +7,9 @@ import { Dome } from '../assets/create_dome';
 import { PyroJet } from '../assets/create_pyro_jet';
 import { SmokeJet } from '../assets/create_smoke_jet';
 
+import { LaserScreen } from '../assets/create_screen';
+import { JigglyDancer } from 'assets/create_jiggly_dancer';
+
 export let cube: THREE.Mesh;
 
 export let pyroDevices : (PyroSparkler | PyroJet | SmokeJet)[] = [];
@@ -43,6 +46,21 @@ export const setupStage = () => {
     // const smoke1 = new SmokeJet([4, 0, 0], 1600, 8);
     // smoke1.setModeOn();
     // pyroDevices.push(smoke1);
+
+
+    // create screen
+    const laserScreen1 = new LaserScreen([0, 3, -5], [1, 1, 0], 100.0, 100.0, 10, 10, 0.1);
+    otherDevices.push(laserScreen1);
+    console.log('laser screen made');
+    // lineColor: number[], verticalLineDensity: number, horizontalLineDensity: number, planeWidth: number, planeHeight: number
+
+    // make a directional light (only for debugging purposes)
+    const directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
+    scene.add( directionalLight );
+
+
+    // const jigglyDancer1 = new JigglyDancer([0, 0, 4], [0, 1, 0]);
+    // otherDevices.push(jigglyDancer1);
 
     // const dome = new Dome();
     // otherDevices.push(dome);
