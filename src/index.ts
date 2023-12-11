@@ -102,8 +102,8 @@ const animate = () => {
     });
     otherDevices.forEach(d => d.update(frameCount))
 
-    // cube.rotateX(0.01);
-    // cube.rotateY(0.01);
+    cube.rotateX(0.01);
+    cube.rotateY(0.01);
     localStorage.setItem("cameraPos", JSON.stringify({
         position: camera.position,
         rotation: camera.rotation,

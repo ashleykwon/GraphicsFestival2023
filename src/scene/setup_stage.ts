@@ -53,7 +53,7 @@ export const setupStage = () => {
     pyroDevices.push(pyro3p)
     pyroDevices.push(pyro4p);
 
-    pyroDevices.forEach(pd => pd.setModeOn())
+    // pyroDevices.forEach(pd => pd.setModeOn())
     // pyroDevices.forEach(pd => pd.setModeOff())
     
     // const smoke1 = new SmokeJet([4, 0, 0], 1600, 8);
@@ -94,22 +94,52 @@ export const setupStage = () => {
     const screenC = new LaserScreen([-10, 39, -0.3], [1, 0, 0], 16, 10);
 
     // light strips
-    const lstrip1 = new LightStrip(0x00ffaa, [-5, 4.5, 57], [0, 4.5, 38])
+    const lstripL1 = new LightStrip(0x00ffaa, [-5, 4.5, 57], [0, 4.5, 38.5])
+    const lstripL2 = new LightStrip(0x00ffaa, [0, 4.5, 57 - 19], [-5, 4.5, 38 - 19])
+    const lstripR1 = new LightStrip(0x00ffaa, [-5, 4.5, -(57)], [0, 4.5, -(38.5)])
+    const lstripR2 = new LightStrip(0x00ffaa, [0, 4.5, -(57 - 19)], [-5, 4.5, -(38 - 19)])
+    const lstripC1 = new LightStrip(0x00ffaa, [-5, 4.5, 57 - 38], [0, 4.5, 38 - 38])
+    const lstripC2 = new LightStrip(0x00ffaa, [-5, 4.5, -(57 - 38)], [0, 4.5, -(38 - 38)])
+
+    let ls_ht = 29;
+    let ls_htd = -3;
+    const lstripL1T = new LightStrip(0x00ffaa, [-5 + ls_htd, ls_ht, 57], [0 + ls_htd, ls_ht, 38.5])
+    const lstripL2T = new LightStrip(0x00ffaa, [0 + ls_htd, ls_ht, 57 - 19], [-5 + ls_htd, ls_ht, 38 - 19])
+    const lstripR1T = new LightStrip(0x00ffaa, [-5 + ls_htd, ls_ht, -(57)], [0 + ls_htd, ls_ht, -(38.5)])
+    const lstripR2T = new LightStrip(0x00ffaa, [0 + ls_htd, ls_ht, -(57 - 19)], [-5 + ls_htd, ls_ht, -(38 - 19)])
+    const lstripC1T = new LightStrip(0x00ffaa, [-5 + ls_htd, ls_ht, 57 - 38], [0 + ls_htd, ls_ht, 38 - 38])
+    const lstripC2T = new LightStrip(0x00ffaa, [-5 + ls_htd, ls_ht, -(57 - 38)], [0 + ls_htd, ls_ht, -(38 - 38)])
+
+    let ls_right_corr = -0.3;
+    const lstripSL1 = new LightStrip(0x00ffaa, [-5, 5.7, 4.3], [13.5, 5.7, 4.3])
+    const lstripSL2 = new LightStrip(0x00ffaa, [18, 5.7, 0 + ls_right_corr], [13.5, 5.7, 4.3])
+    const lstripSR1 = new LightStrip(0x00ffaa, [-5, 5.7, -4.3 + ls_right_corr], [13.5, 5.7, -4.3 + ls_right_corr])
+    const lstripSR2 = new LightStrip(0x00ffaa, [18, 5.7, 0 + ls_right_corr], [13.5, 5.7, -4.3 + ls_right_corr])
+
+    const lstripSL1B = new LightStrip(0x00ffaa, [-5, -1, 4.3 + 6.5], [46.5, -1, 4.3 + 6.5])
+    const lstripSL2B = new LightStrip(0x00ffaa, [58, -1, 0 + ls_right_corr], [46.5, -1, 4.3 + 6.5])
+    const lstripSR1B = new LightStrip(0x00ffaa, [-5, -1, -4.3 + ls_right_corr - 6.5], [46.5, -1, -4.3 + ls_right_corr - 6.5])
+    const lstripSR2B = new LightStrip(0x00ffaa, [58, -1, 0 + ls_right_corr], [46.5, -1, -4.3 + ls_right_corr - 6.5])
+
+    const lstripCB1 = new LightStrip(0x00ffaa, [-5, 7.9, 6], [-5, 7.9, -6])
+    const lstripCB2 = new LightStrip(0x00ffaa, [-11, 7.9, -6], [-5, 7.9, -6])
+    const lstripCB3 = new LightStrip(0x00ffaa, [-11, 7.9, 6], [-11, 7.9, -6])
+    const lstripCB4 = new LightStrip(0x00ffaa, [-5, 7.9, 6], [-11, 7.9, 6])
 
     // const dome = new Dome();
     // otherDevices.push(dome);
     
-    // const geometry = new THREE.BoxGeometry(2, 2, 2); 
-    // const material = new THREE.MeshStandardMaterial({
-    //     color: 0x00ff00, 
-    //     emissive: 0x00ffff,
-    //     emissiveIntensity: 1,
-    //     wireframe: true,
-    //     wireframeLinewidth: 2
-    // }); 
-    // cube = new THREE.Mesh(geometry, material); 
-    // cube.position.setY(3)
-    // scene.add(cube);
+    const geometry = new THREE.BoxGeometry(3, 3, 3); 
+    const material = new THREE.MeshStandardMaterial({
+        color: 0x00ff00, 
+        emissive: 0x00ffff,
+        emissiveIntensity: 2,
+        wireframe: true,
+        wireframeLinewidth: 5
+    }); 
+    cube = new THREE.Mesh(geometry, material); 
+    cube.position.set(-8, 12, 0)
+    scene.add(cube);
 
     const loaded_scale = 0.3;
     load_object(

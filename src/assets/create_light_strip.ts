@@ -22,6 +22,8 @@ export class LightStrip extends Device {
             color: color,
             resolution: new THREE.Vector2(800, 600),
             lineWidth: 0.5,
+            dashArray: 0.3,
+            dashRatio: 0.5
         });
 
         // @ts-ignore

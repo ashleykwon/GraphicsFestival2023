@@ -20,7 +20,7 @@ export const setupLights = () => {
                 t * pt1[2] + (1 - t) * pt2[2]
             ];
             console.log(p)
-            const SL = new SpotLight(0xffffff, 0.5, p, [1, 0, 0]);
+            const SL = new SpotLight(0xffffff, 0.2, p, [1, 0, 0]);
             SL.setModeOn();
             createdLights.push(SL);
         }
