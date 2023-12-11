@@ -32,15 +32,15 @@ vec3 palette(float t){
 }
 
 void main() {
-    float angle = u_time*0.3;
+    float angle = u_time*0.2;
     vec2 normalizedCoord = -1.0 + 2.0 *vUv *2.0 - 1.0;
-    for (float i = 0.0; i < 20.0; i++){
+    for (float i = 0.0; i < 30.0; i++){
         normalizedCoord = abs(normalizedCoord);
-        normalizedCoord -= 0.5;
+        normalizedCoord -= 0.8; // larger value means less initial granularity
         normalizedCoord *= 1.1;
         normalizedCoord *= mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
     } 
-    gl_FragColor = 0.3*vec4(palette(length(normalizedCoord)), 1.0);
+    gl_FragColor = 0.3*vec4(palette(length(normalizedCoord)), 1.0); // adjust this 0.3 here to reduce brightness
 
 }
 `;
@@ -78,7 +78,7 @@ void main() {
         finalColor += screenColor * d;
     }
     
-    gl_FragColor = vec4(finalColor, 1.0);
+    gl_FragColor = 0.3*vec4(finalColor, 1.0);
 }
 `;
 
@@ -162,7 +162,7 @@ export class LaserScreen extends Device {
                 u_time: {value: 0.0}
             },
             vertexShader: vertexShader,
-            fragmentShader: fragmentShader
+            fragmentShader: fragmentShaderThree
         });
 
         this.object = new THREE.Mesh(geometry, material);
