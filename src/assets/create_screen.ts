@@ -44,15 +44,7 @@ void main() {
     length(normalizedCoord + vec2(-0.4, -0.1)), 1.0);
 }
 `;
-// vec2 uv = vPosition;
-//     gl_FragColor = vec4(0, 0, 1, 1);
-//     for (int i = 0; i < verticalLineDensity; i++){
-//         float currentHorizontalStartPoint = -1.0 + u_time + float(i)*1.0/float(horizontalLineDensity);
-//         float currentVerticalStartPoint =  -1.0 + u_time + float(i)*1.0/float(verticalLineDensity);
-//         if ((currentVerticalStartPoint < uv[0] && uv[0] < currentVerticalStartPoint + lineThickness) || (currentHorizontalStartPoint < uv[1] && uv[1] < currentHorizontalStartPoint + lineThickness)){
-//             gl_FragColor = vec4(lineColor, 1);
-//         }
-//     }
+
 
 export class LaserScreen extends Device {
     position:  number[];
@@ -91,7 +83,8 @@ export class LaserScreen extends Device {
         });
 
         this.object = new THREE.Mesh(geometry, material);
-        // this.object.rotation.set(new THREE.Vector3( 0, 0, Math.PI / 2));
+        // this.object.rotation.set(new THREE.Vector3( 0,  Math.PI / 2, 0));
+        this.object.rotateY(Math.PI / 2);
         this.object.scale.set(2.5, 1, 0)
         this.object.position.set(this.position[0], this.position[1], this.position[2]);
         scene.add(this.object);
