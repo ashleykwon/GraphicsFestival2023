@@ -23,7 +23,7 @@ scene.fog = new THREE.FogExp2(0x000000, 0.005);
 
 export const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.01, 1000 );
 camera.position.set(60, 10, 0);
-const screenDimensions = [800 * 2, 600 * 2];
+const screenDimensions = [1200 * 2, 700 * 2];
 
 const renderer = new THREE.WebGLRenderer({
     canvas: document.getElementById('main-canvas') as HTMLCanvasElement,

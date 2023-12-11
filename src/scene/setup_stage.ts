@@ -126,6 +126,27 @@ export const setupStage = () => {
     const lstripCB3 = new LightStrip(0x00ffaa, [-11, 7.9, 6], [-11, 7.9, -6])
     const lstripCB4 = new LightStrip(0x00ffaa, [-5, 7.9, 6], [-11, 7.9, 6])
 
+    const lstripT1L1 = new LightStrip(0x00ffaa, [-17, 1, 59.5], [-17, 41, 59.5]) // light tower L1
+    const lstripT1L2 = new LightStrip(0x00ffaa, [-17, 1, 68], [-17, 41, 68])
+    const lstripT1L3 = new LightStrip(0x00ffaa, [-8.5, 1, 59.5], [-8.5, 41, 59.5])
+    const lstripT1L4 = new LightStrip(0x00ffaa, [-8.5, 1, 68], [-8.5, 41, 68])
+
+    let lt_offset = [37.5, 19.5];
+    const lstripT2L1 = new LightStrip(0x00ffaa, [-17 + lt_offset[0], 1, 59.5 + lt_offset[1]], [-17 + lt_offset[0], 21, 59.5 + lt_offset[1]]) // light tower L2
+    const lstripT2L2 = new LightStrip(0x00ffaa, [-17 + lt_offset[0], 1, 68 + lt_offset[1]], [-17 + lt_offset[0], 21, 68 + lt_offset[1]])
+    const lstripT2L3 = new LightStrip(0x00ffaa, [-8.5 + lt_offset[0], 1, 59.5 + lt_offset[1]], [-8.5 + lt_offset[0], 21, 59.5 + lt_offset[1]])
+    const lstripT2L4 = new LightStrip(0x00ffaa, [-8.5 + lt_offset[0], 1, 68 + lt_offset[1]], [-8.5 + lt_offset[0], 21, 68 + lt_offset[1]])
+
+    const lstripT1R1 = new LightStrip(0x00ffaa, [-17, 1, -59.5], [-17, 41, -59.5]) // light tower R1
+    const lstripT1R2 = new LightStrip(0x00ffaa, [-17, 1, -68], [-17, 41, -68])
+    const lstripT1R3 = new LightStrip(0x00ffaa, [-8.5, 1, -59.5], [-8.5, 41, -59.5])
+    const lstripT1R4 = new LightStrip(0x00ffaa, [-8.5, 1, -68], [-8.5, 41, -68])
+
+    const lstripT2R1 = new LightStrip(0x00ffaa, [-17 + lt_offset[0], 1, -59.5 - lt_offset[1]], [-17 + lt_offset[0], 21, -59.5 - lt_offset[1]]) // light tower R2
+    const lstripT2R2 = new LightStrip(0x00ffaa, [-17 + lt_offset[0], 1, -68 - lt_offset[1]], [-17 + lt_offset[0], 21, -68 - lt_offset[1]])
+    const lstripT2R3 = new LightStrip(0x00ffaa, [-8.5 + lt_offset[0], 1, -59.5 - lt_offset[1]], [-8.5 + lt_offset[0], 21, -59.5 - lt_offset[1]])
+    const lstripT2R4 = new LightStrip(0x00ffaa, [-8.5 + lt_offset[0], 1, -68 - lt_offset[1]], [-8.5 + lt_offset[0], 21, -68 - lt_offset[1]])
+
     // const dome = new Dome();
     // otherDevices.push(dome);
     
