@@ -34,7 +34,7 @@ vec3 palette(float t){
 
 void main() {
    
-    gl_FragColor = 0.3*vec4(palette(u_time), 1.0); // adjust this 0.3 here to reduce brightness
+    gl_FragColor = vec4(palette(u_time), 1.0); // adjust this 0.3 here to reduce brightness
 
 }
 `;
@@ -133,7 +133,7 @@ export class LaserScreen extends Device {
                 patternID : {value: Math.random()*(2-0)+0}
             },
             vertexShader: vertexShader,
-            fragmentShader: fragmentShaderSparkle
+            fragmentShader: fragmentShaderSolid
         });
 
         this.object = new THREE.Mesh(geometry, material);
