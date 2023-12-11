@@ -23,7 +23,8 @@ export class Laser extends Device {
         this.playStartTime = 0;
         this.playLength = 0;
 
-        this.geometry = new THREE.CylinderGeometry(this.width, this.width, 100);
+        let beamLength = 500;
+        this.geometry = new THREE.CylinderGeometry(this.width, this.width, beamLength);
         this.material = new THREE.MeshStandardMaterial({
             color: this.color, 
             emissive: this.color,
@@ -31,7 +32,7 @@ export class Laser extends Device {
         }); 
         this.object = new THREE.Mesh(this.geometry, this.material); 
 
-        this.geometry.translate(0, 50, 0); // fix origin to be at beam origin
+        this.geometry.translate(0, beamLength / 2, 0); // fix origin to be at beam origin
         this.object.position.set(...this.position)
 
         scene.add(this.object);

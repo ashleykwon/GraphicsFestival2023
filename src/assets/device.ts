@@ -1,3 +1,6 @@
+import { camera } from '../index';
+import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
+
 export type updateFunc = (t: number, device: Device) => any;
 
 export class Device {
@@ -16,6 +19,12 @@ export class Device {
         this.playCallback = () => {};
         this.playStartTime = 0;
         this.playLength = 0;
+    }
+
+    addTransformControls(){
+        const control = new TransformControls(camera, document.getElementById('main-canvas') as HTMLCanvasElement);
+        control.attach(this.object);
+        console.log(control)
     }
 
     setModeOff(){

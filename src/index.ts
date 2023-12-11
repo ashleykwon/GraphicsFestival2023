@@ -18,9 +18,10 @@ import { cameraPosition } from 'three/examples/jsm/nodes/Nodes';
 
 // important objects are scene and camera
 export const scene = new THREE.Scene();
+export const scene2 = new THREE.Scene();
 scene.fog = new THREE.FogExp2(0x000000, 0.005);
 
-const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.01, 1000 );
+export const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.01, 1000 );
 camera.position.set(60, 10, 0);
 const screenDimensions = [800 * 2, 600 * 2];
 
@@ -46,6 +47,9 @@ setupLights();
 // **********************
 
 const renderScene = new RenderPass(scene, camera);
+const renderScene2 = new RenderPass(scene2, camera);
+renderScene.clear = true;
+renderScene2.clear = false;
 const bloomPass = new UnrealBloomPass(new THREE.Vector2(...screenDimensions), 1.5, 0.4, 0.85 );
 const params = {
     threshold: 0.3,
@@ -61,13 +65,22 @@ const outputPass = new OutputPass();
 
 const composer = new EffectComposer(renderer);
 composer.addPass(renderScene);
+composer.addPass(renderScene2);
 composer.addPass(bloomPass);
-// composer.addPass(fxaaPass);
 composer.addPass(outputPass);
 
 // **********************
 // RENDER LOOP
 // **********************
+
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+
+const onPointerMove = ( event: any ) => {
+	pointer.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+	pointer.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+}
+window.addEventListener( 'pointermove', onPointerMove );
 
 const camData = localStorage.getItem("cameraPos");
 if(camData){
@@ -76,6 +89,7 @@ if(camData){
     camera.rotation.set(d.rotation._x, d.rotation._y, d.rotation._z);
     controls.target = new THREE.Vector3(d.lookAt.x, d.lookAt.y, d.lookAt.z)
 }
+
 
 let frameCount = 0;
 const animate = () => {
@@ -90,16 +104,20 @@ const animate = () => {
 
     // cube.rotateX(0.01);
     // cube.rotateY(0.01);
-    console.log(camera, controls.target)
     localStorage.setItem("cameraPos", JSON.stringify({
         position: camera.position,
         rotation: camera.rotation,
         lookAt: controls.target
     }));
     
+    raycaster.setFromCamera( pointer, camera );
+	const intersects = raycaster.intersectObjects( scene.children )
+    console.log(intersects[0]?.point)
+
     // three.js needs these funcitons to be called every time we render the scene
     controls.update();
     composer.render();
+
     frameCount += 1;
     requestAnimationFrame(animate);
 }

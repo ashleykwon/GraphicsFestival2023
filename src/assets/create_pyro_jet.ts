@@ -102,7 +102,7 @@ export class PyroJet extends Device {
             positions[i + 2] = this.position[2]; 
 
             scales[j] = Math.random() * 0.5 + 1;
-            if(Math.random() > 0.98) scales[j] =  Math.random() * 2 + 2;
+            if(Math.random() > 0.98) scales[j] =  Math.random() * 3 + 3;
 
             brightness[j] = Math.random();
             noise1D[j] = Math.random();

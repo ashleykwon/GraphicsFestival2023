@@ -34,6 +34,12 @@ export class LaserFan extends Device {
             this.object.add(laser.object);
         }
 
+        const machineGeometry = new THREE.BoxGeometry(1, 1, 2);
+        const machineMaterial = new THREE.MeshStandardMaterial({color: 0xaaaaaa});
+        const machine = new THREE.Mesh(machineGeometry, machineMaterial);
+        machine.position.set(position[0], position[1], position[2]);
+        scene.add(machine);
+
         scene.add(this.object);
         this.setModeOff();
     }
@@ -43,7 +49,7 @@ export class LaserFan extends Device {
         for(let i = 0; i < this.numLasers; i++){
             const degrees = remap(i, 0, this.numLasers - 1, -angle / 2, angle / 2);
             const theta = degrees * Math.PI / 180;
-            this.lasers[i].object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), theta);
+            this.lasers[i].object.setRotationFromAxisAngle(new THREE.Vector3(1, 0, 0), theta);
         }
 
         // console.log(this, this.lasers)
