@@ -49,10 +49,20 @@ export const setupStage = () => {
 
 
     // create screen
-    const laserScreen1 = new LaserScreen([-10, 20, 0], [1, 1, 0], 1000.0, 1000.0, 10, 10, 0.1);
+    const laserScreen1 = new LaserScreen([-20, 15, 0], [1, 1, 0], 1000.0, 1000.0, 10, 10, 0.1);
     otherDevices.push(laserScreen1);
     console.log('laser screen made');
     // lineColor: number[], verticalLineDensity: number, horizontalLineDensity: number, planeWidth: number, planeHeight: number
+
+
+    const laserScreen2 = new LaserScreen([-20, 15, 45], [1, 1, 0], 1000.0, 1000.0, 10, 10, 0.1);
+    otherDevices.push(laserScreen2);
+    console.log('laser screen 2 made');
+
+    const laserScreen3 = new LaserScreen([-20, 15, -45], [1, 1, 0], 1000.0, 1000.0, 10, 10, 0.1);
+    otherDevices.push(laserScreen3);
+    console.log('laser screen 3 made');
+
 
     // make a directional light (only for debugging purposes)
     const directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
