@@ -11,9 +11,13 @@ import { LightStrip } from '../assets/create_light_strip';
 
 export let cube: THREE.Mesh;
 
-export let pyroDevices : (PyroSparkler | PyroJet | SmokeJet)[] = [];
+export let pyroSparklers : PyroSparkler[] = [];
+export let pyroJets : PyroJet[] = [];
+export let smokeJets : SmokeJet[] = [];
+
 export let otherDevices : Device[] = [];
 export let screenDevices: LaserScreen[] = [];
+export let lightStrips : LightStrip[] = [];
 
 export const setupStage = () => {
     // pyro sparklers
@@ -21,41 +25,46 @@ export const setupStage = () => {
     const pyroB = new PyroSparkler([2, 3, 10], 800, 8);
     const pyroC = new PyroSparkler([2, 3, -30], 800, 8);
     const pyroD = new PyroSparkler([2, 3, 30], 800, 8);
-    pyroDevices.push(pyroA)
-    pyroDevices.push(pyroB)
-    pyroDevices.push(pyroC)
-    pyroDevices.push(pyroD)
+    pyroSparklers.push(pyroA)
+    pyroSparklers.push(pyroB)
+    pyroSparklers.push(pyroC)
+    pyroSparklers.push(pyroD)
 
     const pyroAp = new PyroSparkler([-9, 33, -10], 800, 8); // top row
     const pyroBp = new PyroSparkler([-9, 33, 10], 800, 8);
     const pyroCp = new PyroSparkler([-9, 33, -30], 800, 8);
     const pyroDp = new PyroSparkler([-9, 33, 30], 800, 8);
-    pyroDevices.push(pyroAp)
-    pyroDevices.push(pyroBp)
-    pyroDevices.push(pyroCp)
-    pyroDevices.push(pyroDp)
+    pyroSparklers.push(pyroAp)
+    pyroSparklers.push(pyroBp)
+    pyroSparklers.push(pyroCp)
+    pyroSparklers.push(pyroDp)
 
     // pyro jets
     const pyro3 = new PyroJet([2, 3, -20], 2*800, 10); // top row
     const pyro4 = new PyroJet([2, 3, 20], 2*800, 10);
     const pyro5 = new PyroJet([2, 3, -40], 2*800, 10);
     const pyro6 = new PyroJet([2, 3, 40], 2*800, 10);
-    pyroDevices.push(pyro6);
-    pyroDevices.push(pyro5)
-    pyroDevices.push(pyro3)
-    pyroDevices.push(pyro4);
+    pyroJets.push(pyro6);
+    pyroJets.push(pyro5)
+    pyroJets.push(pyro3)
+    pyroJets.push(pyro4);
 
     const pyro3p = new PyroJet([-9, 33, -20], 2*800, 10); // stage row
     const pyro4p = new PyroJet([-9, 33, 20], 2*800, 10);
     const pyro5p = new PyroJet([-9, 33, -40], 2*800, 10);
     const pyro6p = new PyroJet([-9, 33, 40], 2*800, 10);
-    pyroDevices.push(pyro6p);
-    pyroDevices.push(pyro5p)
-    pyroDevices.push(pyro3p)
-    pyroDevices.push(pyro4p);
+    pyroJets.push(pyro6p);
+    pyroJets.push(pyro5p)
+    pyroJets.push(pyro3p)
+    pyroJets.push(pyro4p);
 
-    pyroDevices.forEach(pd => pd.setModeOn())
-    // pyroDevices.forEach(pd => pd.setModeOff())
+    // [...pyroSparklers, ...pyroJets, ...smokeJets].forEach(pd => pd.setModeOn())
+    // [...pyroSparklers, ...pyroJets, ...smokeJets].forEach(pd => pd.setModeOff())
+
+    pyroJets.forEach(pd => {
+        pd.emitParticles = false;
+        pd.setModeOn();
+    });
     
     // const smoke1 = new SmokeJet([4, 0, 0], 1600, 8);
     // smoke1.setModeOn();
@@ -108,6 +117,7 @@ export const setupStage = () => {
     const lstripR2 = new LightStrip(0x00ffaa, [0, 4.5, -(57 - 19)], [-5, 4.5, -(38 - 19)])
     const lstripC1 = new LightStrip(0x00ffaa, [-5, 4.5, 57 - 38], [0, 4.5, 38 - 38])
     const lstripC2 = new LightStrip(0x00ffaa, [-5, 4.5, -(57 - 38)], [0, 4.5, -(38 - 38)])
+    lightStrips.push(lstripL1, lstripL2, lstripR1, lstripR2, lstripC1, lstripC2);
 
     let ls_ht = 29;
     let ls_htd = -3;
@@ -117,43 +127,51 @@ export const setupStage = () => {
     const lstripR2T = new LightStrip(0x00ffaa, [0 + ls_htd, ls_ht, -(57 - 19)], [-5 + ls_htd, ls_ht, -(38 - 19)])
     const lstripC1T = new LightStrip(0x00ffaa, [-5 + ls_htd, ls_ht, 57 - 38], [0 + ls_htd, ls_ht, 38 - 38])
     const lstripC2T = new LightStrip(0x00ffaa, [-5 + ls_htd, ls_ht, -(57 - 38)], [0 + ls_htd, ls_ht, -(38 - 38)])
+    lightStrips.push(lstripL1T, lstripL2T, lstripR1T, lstripR2T, lstripC1T, lstripC2T);
 
     let ls_right_corr = -0.3;
     const lstripSL1 = new LightStrip(0x00ffaa, [-5, 5.7, 4.3], [13.5, 5.7, 4.3])
     const lstripSL2 = new LightStrip(0x00ffaa, [18, 5.7, 0 + ls_right_corr], [13.5, 5.7, 4.3])
     const lstripSR1 = new LightStrip(0x00ffaa, [-5, 5.7, -4.3 + ls_right_corr], [13.5, 5.7, -4.3 + ls_right_corr])
     const lstripSR2 = new LightStrip(0x00ffaa, [18, 5.7, 0 + ls_right_corr], [13.5, 5.7, -4.3 + ls_right_corr])
+    lightStrips.push(lstripSL1, lstripSL2, lstripSR1, lstripSR2);
 
     const lstripSL1B = new LightStrip(0x00ffaa, [-5, -1, 4.3 + 6.5], [46.5, -1, 4.3 + 6.5])
     const lstripSL2B = new LightStrip(0x00ffaa, [58, -1, 0 + ls_right_corr], [46.5, -1, 4.3 + 6.5])
     const lstripSR1B = new LightStrip(0x00ffaa, [-5, -1, -4.3 + ls_right_corr - 6.5], [46.5, -1, -4.3 + ls_right_corr - 6.5])
     const lstripSR2B = new LightStrip(0x00ffaa, [58, -1, 0 + ls_right_corr], [46.5, -1, -4.3 + ls_right_corr - 6.5])
+    lightStrips.push(lstripSL1B, lstripSL2B, lstripSR1B, lstripSR2B);
 
     const lstripCB1 = new LightStrip(0x00ffaa, [-5, 7.9, 6], [-5, 7.9, -6])
     const lstripCB2 = new LightStrip(0x00ffaa, [-11, 7.9, -6], [-5, 7.9, -6])
     const lstripCB3 = new LightStrip(0x00ffaa, [-11, 7.9, 6], [-11, 7.9, -6])
     const lstripCB4 = new LightStrip(0x00ffaa, [-5, 7.9, 6], [-11, 7.9, 6])
+    lightStrips.push(lstripCB1, lstripCB2, lstripCB3, lstripCB4);
 
     const lstripT1L1 = new LightStrip(0x00ffaa, [-17, 1, 59.5], [-17, 41, 59.5]) // light tower L1
     const lstripT1L2 = new LightStrip(0x00ffaa, [-17, 1, 68], [-17, 41, 68])
     const lstripT1L3 = new LightStrip(0x00ffaa, [-8.5, 1, 59.5], [-8.5, 41, 59.5])
     const lstripT1L4 = new LightStrip(0x00ffaa, [-8.5, 1, 68], [-8.5, 41, 68])
+    lightStrips.push(lstripT1L1, lstripT1L2, lstripT1L3, lstripT1L4);
 
     let lt_offset = [37.5, 19.5];
     const lstripT2L1 = new LightStrip(0x00ffaa, [-17 + lt_offset[0], 1, 59.5 + lt_offset[1]], [-17 + lt_offset[0], 21, 59.5 + lt_offset[1]]) // light tower L2
     const lstripT2L2 = new LightStrip(0x00ffaa, [-17 + lt_offset[0], 1, 68 + lt_offset[1]], [-17 + lt_offset[0], 21, 68 + lt_offset[1]])
     const lstripT2L3 = new LightStrip(0x00ffaa, [-8.5 + lt_offset[0], 1, 59.5 + lt_offset[1]], [-8.5 + lt_offset[0], 21, 59.5 + lt_offset[1]])
     const lstripT2L4 = new LightStrip(0x00ffaa, [-8.5 + lt_offset[0], 1, 68 + lt_offset[1]], [-8.5 + lt_offset[0], 21, 68 + lt_offset[1]])
+    lightStrips.push(lstripT2L1, lstripT2L2, lstripT2L3, lstripT2L4);
 
     const lstripT1R1 = new LightStrip(0x00ffaa, [-17, 1, -59.5], [-17, 41, -59.5]) // light tower R1
     const lstripT1R2 = new LightStrip(0x00ffaa, [-17, 1, -68], [-17, 41, -68])
     const lstripT1R3 = new LightStrip(0x00ffaa, [-8.5, 1, -59.5], [-8.5, 41, -59.5])
     const lstripT1R4 = new LightStrip(0x00ffaa, [-8.5, 1, -68], [-8.5, 41, -68])
+    lightStrips.push(lstripT1R1, lstripT1R2, lstripT1R3, lstripT1R4);
 
     const lstripT2R1 = new LightStrip(0x00ffaa, [-17 + lt_offset[0], 1, -59.5 - lt_offset[1]], [-17 + lt_offset[0], 21, -59.5 - lt_offset[1]]) // light tower R2
     const lstripT2R2 = new LightStrip(0x00ffaa, [-17 + lt_offset[0], 1, -68 - lt_offset[1]], [-17 + lt_offset[0], 21, -68 - lt_offset[1]])
     const lstripT2R3 = new LightStrip(0x00ffaa, [-8.5 + lt_offset[0], 1, -59.5 - lt_offset[1]], [-8.5 + lt_offset[0], 21, -59.5 - lt_offset[1]])
     const lstripT2R4 = new LightStrip(0x00ffaa, [-8.5 + lt_offset[0], 1, -68 - lt_offset[1]], [-8.5 + lt_offset[0], 21, -68 - lt_offset[1]])
+    lightStrips.push(lstripT2R1, lstripT2R2, lstripT2R3, lstripT2R4);
 
     // const dome = new Dome();
     // otherDevices.push(dome);

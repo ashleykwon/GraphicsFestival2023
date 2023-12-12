@@ -7,6 +7,7 @@ import { SpotLight } from '../assets/create_spot_light';
 
 export let movingLights : (MovingLight | SpotLight)[] = [];
 export let laserLights: (Laser | LaserFan)[] = [];
+export let towerLasers: Laser[] = [];
 export let spotLights: SpotLight[] = [];
 
 export const setupLights = () => {
@@ -20,14 +21,12 @@ export const setupLights = () => {
                 t * pt1[1] + (1 - t) * pt2[1], 
                 t * pt1[2] + (1 - t) * pt2[2]
             ];
-            const SL = new SpotLight(0xffffff, 0.2, p, [1, 0, 0]);
-            SL.setModeOn();
+            const SL = new SpotLight(0xffffff, 0.4, p, [1, 0, 0]);
+            // SL.setModeOn();
             createdLights.push(SL);
         }
         return createdLights;
     }
-    // const lightSL1 = new SpotLight(0xffffff, 0.3, [30, 30, 0], [1, 0, 0]);
-    // lightSL1.setModeOn();
     spotLights.push(...genSpotlights([-7.5, 22, 68], [-7.5, 22, 60], 4));
     spotLights.push(...genSpotlights([-7.5, 41, 68], [-7.5, 41, 60], 4));
     spotLights.push(...genSpotlights([-7.5, 22, -68], [-7.5, 22, -60], 4));
@@ -104,10 +103,10 @@ export const setupLights = () => {
     laserL2.setModeOn();
     laserL3.setModeOn();
     laserL4.setModeOn();
-    laserLights.push(laserL1);
-    laserLights.push(laserL2);
-    laserLights.push(laserL3);
-    laserLights.push(laserL4);
+    towerLasers.push(laserL1);
+    towerLasers.push(laserL2);
+    towerLasers.push(laserL3);
+    towerLasers.push(laserL4);
 
     let centerLF = [24, 1, 82]
     const laserLF1 = new Laser(0x00ff00, 0.1, [centerLF[0] + 2, centerLF[1], centerLF[2]]);
@@ -118,10 +117,10 @@ export const setupLights = () => {
     laserLF2.setModeOn();
     laserLF3.setModeOn();
     laserLF4.setModeOn();
-    laserLights.push(laserLF1);
-    laserLights.push(laserLF2);
-    laserLights.push(laserLF3);
-    laserLights.push(laserLF4);
+    towerLasers.push(laserLF1);
+    towerLasers.push(laserLF2);
+    towerLasers.push(laserLF3);
+    towerLasers.push(laserLF4);
 
     let centerR = [-14, 1, -63 - 2]
     const laserR1 = new Laser(0x00ff00, 0.1, [centerR[0] + 2, centerR[1], centerR[2]]);
@@ -132,10 +131,10 @@ export const setupLights = () => {
     laserR2.setModeOn();
     laserR3.setModeOn();
     laserR4.setModeOn();
-    laserLights.push(laserR1);
-    laserLights.push(laserR2);
-    laserLights.push(laserR3);
-    laserLights.push(laserR4);
+    towerLasers.push(laserR1);
+    towerLasers.push(laserR2);
+    towerLasers.push(laserR3);
+    towerLasers.push(laserR4);
 
     let centerRF = [24, 1, -82 - 6]
     const laserRF1 = new Laser(0x00ff00, 0.1, [centerRF[0] + 2, centerRF[1], centerRF[2]]);
@@ -146,10 +145,10 @@ export const setupLights = () => {
     laserRF2.setModeOn();
     laserRF3.setModeOn();
     laserRF4.setModeOn();
-    laserLights.push(laserRF1);
-    laserLights.push(laserRF2);
-    laserLights.push(laserRF3);
-    laserLights.push(laserRF4);
+    towerLasers.push(laserRF1);
+    towerLasers.push(laserRF2);
+    towerLasers.push(laserRF3);
+    towerLasers.push(laserRF4);
 
     // const laserfan1 = new LaserFan(0xaaff00, 0.05, [-5, 1, 0], 15, 90);
     // laserfan1.updateSpread();
@@ -204,29 +203,29 @@ export const setupLights = () => {
     });
     laserLights.push(laserfanTC)
 
-    const laserfanMA = new LaserFan(0xaaff00, 0.05, [-5, 6.5, 0], 15, 90);
-    laserfanMA.updateSpread();
-    laserfanMA.setModeAuto((t, _laserFan) => {
-        let laserFan = _laserFan as LaserFan;
-        laserFan.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), -Math.PI / 2 + 45 * Math.PI / 180);
-    });
-    laserLights.push(laserfanMA)
+    // const laserfanMA = new LaserFan(0xaaff00, 0.05, [-5, 6.5, 0], 15, 90);
+    // laserfanMA.updateSpread();
+    // laserfanMA.setModeAuto((t, _laserFan) => {
+    //     let laserFan = _laserFan as LaserFan;
+    //     laserFan.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), -Math.PI / 2 + 45 * Math.PI / 180);
+    // });
+    // laserLights.push(laserfanMA)
 
-    const laserfanMB = new LaserFan(0xaaff00, 0.05, [-5, 6.5, 38.5], 15, 90);
-    laserfanMB.updateSpread();
-    laserfanMB.setModeAuto((t, _laserFan) => {
-        let laserFan = _laserFan as LaserFan;
-        laserFan.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), -Math.PI / 2 + 25 * Math.PI / 180);
-    });
-    laserLights.push(laserfanMB)
+    // const laserfanMB = new LaserFan(0xaaff00, 0.05, [-5, 6.5, 38.5], 15, 90);
+    // laserfanMB.updateSpread();
+    // laserfanMB.setModeAuto((t, _laserFan) => {
+    //     let laserFan = _laserFan as LaserFan;
+    //     laserFan.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), -Math.PI / 2 + 25 * Math.PI / 180);
+    // });
+    // laserLights.push(laserfanMB)
 
-    const laserfanMC = new LaserFan(0xaaff00, 0.05, [-5, 6.5, -38.5], 15, 90);
-    laserfanMC.updateSpread();
-    laserfanMC.setModeAuto((t, _laserFan) => {
-        let laserFan = _laserFan as LaserFan;
-        laserFan.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), -Math.PI / 2 + 25 * Math.PI / 180);
-    });
-    laserLights.push(laserfanMC)
+    // const laserfanMC = new LaserFan(0xaaff00, 0.05, [-5, 6.5, -38.5], 15, 90);
+    // laserfanMC.updateSpread();
+    // laserfanMC.setModeAuto((t, _laserFan) => {
+    //     let laserFan = _laserFan as LaserFan;
+    //     laserFan.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), -Math.PI / 2 + 25 * Math.PI / 180);
+    // });
+    // laserLights.push(laserfanMC)
 
     // laserLights.forEach(l => l.setModeOff())
 
