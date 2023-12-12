@@ -1,4 +1,4 @@
-import { scene } from '../index';
+import { scene, scene2, scene3 } from '../index';
 import { Device } from './device';
 
 import * as THREE from 'three';
@@ -72,7 +72,7 @@ void main() {
         finalColor += screenColor * d;
     }
     
-    gl_FragColor = 0.3*vec4(finalColor, 1.0);
+    gl_FragColor = 0.9*vec4(finalColor, 1.0);
 }
 `;
 
@@ -164,7 +164,7 @@ export class LaserScreen extends Device {
         ));
         this.object.material = material;
         this.object.material.needsUpdate = true;
-        scene.add(this.object);
+        scene3.add(this.object);
     
         this.setModeAuto((t: number, device: Device) => {
             if(!this.object.visible) return;

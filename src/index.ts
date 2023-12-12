@@ -24,6 +24,7 @@ import { crossfadeLightStrips, crossfadeTowerLasers, sparkleSpotlights } from '.
 // important objects are scene and camera
 export const scene = new THREE.Scene();
 export const scene2 = new THREE.Scene();
+export const scene3 = new THREE.Scene();
 scene.fog = new THREE.FogExp2(0x000000, 0.005);
 
 export const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.01, 1000 );
@@ -54,8 +55,10 @@ setupCrowd();
 
 const renderScene = new RenderPass(scene, camera);
 const renderScene2 = new RenderPass(scene2, camera);
+const renderScene3 = new RenderPass(scene3, camera);
 renderScene.clear = true;
 renderScene2.clear = false;
+renderScene3.clear = false;
 const bloomPass = new UnrealBloomPass(new THREE.Vector2(...screenDimensions), 1.5, 0.4, 0.85 );
 const params = {
     threshold: 0.3,
@@ -73,6 +76,7 @@ const composer = new EffectComposer(renderer);
 composer.addPass(renderScene);
 composer.addPass(renderScene2);
 composer.addPass(bloomPass);
+composer.addPass(renderScene3);
 composer.addPass(outputPass);
 
 // **********************
@@ -123,7 +127,7 @@ let frameCount = 0;
 let startTime = new Date().getTime();
 let firstRun = true;
 const animate = () => {
-    const t = (new Date().getTime() - startTime) / 1000 * 120 + 900;
+    const t = (new Date().getTime() - startTime) / 1000 * 120 ;
     const ts = (new Date().getTime() - startTime) / 1000;
 
     // update crowd
@@ -260,22 +264,22 @@ const flashDevices = (devices: Device[], flash_duration: number, duration: numbe
     }, duration);
 }
 
-// let counter = 0;
-// setCrowdState(CrowdMode.BOP);
-// const interval_test = () => {
-//     sparkleSpotlights(t_measure);
-//     pulsePyroJet(t_2note);
+let counter = 0;
+setCrowdState(CrowdMode.BOP);
+const interval_test = () => {
+    sparkleSpotlights(t_measure);
+    pulsePyroJet(t_2note);
 
-//     // if(counter % 3 == 0) setCrowdState(CrowdMode.SWAY);
-//     // if(counter % 3 == 1) setCrowdState(CrowdMode.BOP);
-//     // if(counter % 3 == 2) setCrowdState(CrowdMode.JUMP);
-//     // counter += 1;
+    // if(counter % 3 == 0) setCrowdState(CrowdMode.SWAY);
+    // if(counter % 3 == 1) setCrowdState(CrowdMode.BOP);
+    // if(counter % 3 == 2) setCrowdState(CrowdMode.JUMP);
+    // counter += 1;
 
-//     crossfadeLightStrips(0xaaff00, 0x00aaff, 2 * t_measure);
-//     crossfadeTowerLasers(0x00aaff, 0xaaff00, 2 * t_measure);
+    crossfadeLightStrips(0xaaff00, 0x00aaff, 2 * t_measure);
+    crossfadeTowerLasers(0x00aaff, 0xaaff00, 2 * t_measure);
 
-//     flashDevices(towerLasers, t_16note, t_measure, false);
-// }
-// interval_test();
-// setInterval(interval_test, 2 * t_measure);
+    flashDevices(towerLasers, t_16note, t_measure, false);
+}
+interval_test();
+setInterval(interval_test, 2 * t_measure);
 
