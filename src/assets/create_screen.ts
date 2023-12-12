@@ -42,7 +42,6 @@ void main() {
 
 const fragmentShaderSparkle = `
 uniform float u_time;
-
 varying vec2 vUv;
 
 vec3 palette(float t){
@@ -108,6 +107,28 @@ void main() {
     }
 }
 `;
+
+const fragmentShaderGrayscale = `
+uniform float u_time;
+uniform int fragShaderID;
+uniform int patternID;
+varying vec2 vUv;
+
+vec3 grayPalette(float t){
+    vec3 a = vec3(0.500, 0.500, 0.500);
+    vec3 b = vec3(0.300, 0.300, 0.300);
+    vec3 c = vec3(-1.000, -1.000, -1.000);
+    vec3 d = vec3(0.668, 0.668, 0.667);
+    return a + b*cos(6.28318*(c*t +d));
+}
+
+void main() {
+    // soild grayscale colors
+   if (fragShaderID == 0){
+        gl_FragColor = vec4(grayPalette(u_time), 1.0);
+   }
+}
+`
 
 
 export class LaserScreen extends Device {
@@ -179,19 +200,24 @@ export class LaserScreen extends Device {
     changeProgram(id: number){
         this.fragShaderID = id;
 
+        if(this.fragShaderID == 0){
+            this.material.fragmentShader = fragmentShaderGrayscale;
+            console.log("frag shader ID 0");
+        }
+
         if(this.fragShaderID == 1){
             this.material.fragmentShader = fragmentShaderSolid;
-            console.log("frag shader ID changed");
+            console.log("frag shader ID 1");
         }
 
         else if(this.fragShaderID == 2){
             this.material.fragmentShader = fragmentShaderRandomColors;
-            console.log("frag shader ID changed");
+            console.log("frag shader ID 2");
         }
         
         else if(this.fragShaderID == 3){
             this.material.fragmentShader = fragmentShaderSparkle;
-            console.log("frag shader ID changed again");
+            console.log("frag shader ID 3");
         }
 
         this.material.needsUpdate = true;

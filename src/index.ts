@@ -170,6 +170,7 @@ const animate = () => {
             [...pyroJets, ...pyroSparklers, ...smokeJets].forEach(pd => pd.object.visible = false);
             laserFansTop.forEach(l => l.object.visible = false);
             laserFansBottom.forEach(l => l.object.visible = false);
+            screenDevices.forEach(s => s.changeProgram(0));
             setCrowdState(CrowdMode.SWAY);
         }
 
@@ -220,6 +221,17 @@ const animate = () => {
             screenDevices.forEach(s => s.changeProgram(3));
             setCrowdState(CrowdMode.JUMP);
         }
+
+        // is the outro
+        else if (t > 4000){
+            [...pyroJets, ...pyroSparklers, ...smokeJets].forEach(pd => pd.object.visible = false);
+            laserFansTop.forEach(l => l.object.visible = false);
+            laserFansBottom.forEach(l => l.object.visible = false);
+            screenDevices.forEach(s => s.changeProgram(0));
+            setCrowdState(CrowdMode.SWAY);
+        }
+
+        
     }
     
     
