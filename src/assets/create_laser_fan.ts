@@ -35,7 +35,7 @@ export class LaserFan extends Device {
         }
 
         const machineGeometry = new THREE.BoxGeometry(1, 1, 2);
-        const machineMaterial = new THREE.MeshStandardMaterial({color: 0xaaaaaa});
+        const machineMaterial = new THREE.MeshStandardMaterial({color: 0x444444});
         const machine = new THREE.Mesh(machineGeometry, machineMaterial);
         machine.position.set(position[0], position[1], position[2]);
         scene.add(machine);

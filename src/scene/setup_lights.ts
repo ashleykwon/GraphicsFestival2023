@@ -7,6 +7,7 @@ import { SpotLight } from '../assets/create_spot_light';
 
 export let movingLights : (MovingLight | SpotLight)[] = [];
 export let laserLights: (Laser | LaserFan)[] = [];
+export let spotLights: SpotLight[] = [];
 
 export const setupLights = () => {
     // spot lights
@@ -27,31 +28,31 @@ export const setupLights = () => {
     }
     // const lightSL1 = new SpotLight(0xffffff, 0.3, [30, 30, 0], [1, 0, 0]);
     // lightSL1.setModeOn();
-    genSpotlights([-7.5, 22, 68], [-7.5, 22, 60], 4);
-    genSpotlights([-7.5, 41, 68], [-7.5, 41, 60], 4);
-    genSpotlights([-7.5, 22, -68], [-7.5, 22, -60], 4);
+    spotLights.push(...genSpotlights([-7.5, 22, 68], [-7.5, 22, 60], 4));
+    spotLights.push(...genSpotlights([-7.5, 41, 68], [-7.5, 41, 60], 4));
+    spotLights.push(...genSpotlights([-7.5, 22, -68], [-7.5, 22, -60], 4));
 
-    genSpotlights([-7.5, 41, -68], [-7.5, 41, -60], 4);
-    genSpotlights([-7.5, 41, -68], [-7.5, 41, -60], 4);
+    spotLights.push(...genSpotlights([-7.5, 41, -68], [-7.5, 41, -60], 4));
+    spotLights.push(...genSpotlights([-7.5, 41, -68], [-7.5, 41, -60], 4));
 
     
-    genSpotlights([-6.5, 25, 55], [-2.5, 25, 39], 8);
-    genSpotlights([-2.5, 25, 55 - 18.5], [-6.5, 25, 39 - 18.5], 8);
-    genSpotlights([-6.5 - 1.5, 25 - 5.3, 55], [-2.5 - 1.5, 25 - 5.3, 39], 8);
-    genSpotlights([-2.5 - 1.5, 25 - 5.3, 55 - 18.5], [-6.5 - 1.5, 25 - 5.3, 39 - 18.5], 8);
-    genSpotlights([-6.5 - 3.8, 25 - 10.3, 55], [-2.5 - 3.8, 25 - 10.3, 39], 8);
-    genSpotlights([-2.5 - 3.8, 25 - 10.3, 55 - 18.5], [-6.5 - 3.8, 25 - 10.3, 39 - 18.5], 8);
-    genSpotlights([-6.5 - 5, 25 - 15.3, 55], [-2.5 - 5, 25 - 15.3, 39], 8);
-    genSpotlights([-2.5 - 5, 25 - 15.3, 55 - 18.5], [-6.5 - 5, 25 - 15.3, 39 - 18.5], 8);
+    spotLights.push(...genSpotlights([-6.5, 25, 55], [-2.5, 25, 39], 8));
+    spotLights.push(...genSpotlights([-2.5, 25, 55 - 18.5], [-6.5, 25, 39 - 18.5], 8));
+    spotLights.push(...genSpotlights([-6.5 - 1.5, 25 - 5.3, 55], [-2.5 - 1.5, 25 - 5.3, 39], 8));
+    spotLights.push(...genSpotlights([-2.5 - 1.5, 25 - 5.3, 55 - 18.5], [-6.5 - 1.5, 25 - 5.3, 39 - 18.5], 8));
+    spotLights.push(...genSpotlights([-6.5 - 3.8, 25 - 10.3, 55], [-2.5 - 3.8, 25 - 10.3, 39], 8));
+    spotLights.push(...genSpotlights([-2.5 - 3.8, 25 - 10.3, 55 - 18.5], [-6.5 - 3.8, 25 - 10.3, 39 - 18.5], 8));
+    spotLights.push(...genSpotlights([-6.5 - 5, 25 - 15.3, 55], [-2.5 - 5, 25 - 15.3, 39], 8));
+    spotLights.push(...genSpotlights([-2.5 - 5, 25 - 15.3, 55 - 18.5], [-6.5 - 5, 25 - 15.3, 39 - 18.5], 8));
 
-    genSpotlights([-6.5, 25, -(55)], [-2.5, 25, -(39)], 8);
-    genSpotlights([-2.5, 25, -(55 - 18.5)], [-6.5, 25, -(39 - 18.5)], 8);
-    genSpotlights([-6.5 - 1.5, 25 - 5.3, -(55)], [-2.5 - 1.5, 25 - 5.3, -(39)], 8);
-    genSpotlights([-2.5 - 1.5, 25 - 5.3, -(55 - 18.5)], [-6.5 - 1.5, 25 - 5.3, -(39 - 18.5)], 8);
-    genSpotlights([-6.5 - 3.8, 25 - 10.3, -(55)], [-2.5 - 3.8, 25 - 10.3, -(39)], 8);
-    genSpotlights([-2.5 - 3.8, 25 - 10.3, -(55 - 18.5)], [-6.5 - 3.8, 25 - 10.3, -(39 - 18.5)], 8);
-    genSpotlights([-6.5 - 5, 25 - 15.3, -(55)], [-2.5 - 5, 25 - 15.3, -(39)], 8);
-    genSpotlights([-2.5 - 5, 25 - 15.3, -(55 - 18.5)], [-6.5 - 5, 25 - 15.3, -(39 - 18.5)], 8);
+    spotLights.push(...genSpotlights([-6.5, 25, -(55)], [-2.5, 25, -(39)], 8));
+    spotLights.push(...genSpotlights([-2.5, 25, -(55 - 18.5)], [-6.5, 25, -(39 - 18.5)], 8));
+    spotLights.push(...genSpotlights([-6.5 - 1.5, 25 - 5.3, -(55)], [-2.5 - 1.5, 25 - 5.3, -(39)], 8));
+    spotLights.push(...genSpotlights([-2.5 - 1.5, 25 - 5.3, -(55 - 18.5)], [-6.5 - 1.5, 25 - 5.3, -(39 - 18.5)], 8));
+    spotLights.push(...genSpotlights([-6.5 - 3.8, 25 - 10.3, -(55)], [-2.5 - 3.8, 25 - 10.3, -(39)], 8));
+    spotLights.push(...genSpotlights([-2.5 - 3.8, 25 - 10.3, -(55 - 18.5)], [-6.5 - 3.8, 25 - 10.3, -(39 - 18.5)], 8));
+    spotLights.push(...genSpotlights([-6.5 - 5, 25 - 15.3, -(55)], [-2.5 - 5, 25 - 15.3, -(39)], 8));
+    spotLights.push(...genSpotlights([-2.5 - 5, 25 - 15.3, -(55 - 18.5)], [-6.5 - 5, 25 - 15.3, -(39 - 18.5)], 8));
 
     // ************
     // moving lights
@@ -202,6 +203,30 @@ export const setupLights = () => {
         laserFan.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), -Math.PI / 2 + 25 * Math.PI / 180);
     });
     laserLights.push(laserfanTC)
+
+    const laserfanMA = new LaserFan(0xaaff00, 0.05, [-5, 6.5, 0], 15, 90);
+    laserfanMA.updateSpread();
+    laserfanMA.setModeAuto((t, _laserFan) => {
+        let laserFan = _laserFan as LaserFan;
+        laserFan.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), -Math.PI / 2 + 45 * Math.PI / 180);
+    });
+    laserLights.push(laserfanMA)
+
+    const laserfanMB = new LaserFan(0xaaff00, 0.05, [-5, 6.5, 38.5], 15, 90);
+    laserfanMB.updateSpread();
+    laserfanMB.setModeAuto((t, _laserFan) => {
+        let laserFan = _laserFan as LaserFan;
+        laserFan.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), -Math.PI / 2 + 25 * Math.PI / 180);
+    });
+    laserLights.push(laserfanMB)
+
+    const laserfanMC = new LaserFan(0xaaff00, 0.05, [-5, 6.5, -38.5], 15, 90);
+    laserfanMC.updateSpread();
+    laserfanMC.setModeAuto((t, _laserFan) => {
+        let laserFan = _laserFan as LaserFan;
+        laserFan.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), -Math.PI / 2 + 25 * Math.PI / 180);
+    });
+    laserLights.push(laserfanMC)
 
     // laserLights.forEach(l => l.setModeOff())
 
