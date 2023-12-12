@@ -9,7 +9,7 @@ import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader';
 
 import { load_object } from './util/object_loader';
 import { setupStage, cube, otherDevices, screenDevices, pyroSparklers, pyroJets, smokeJets, lightStrips } from './scene/setup_stage';
-import { setupLights, movingLights, laserLights, spotLights, towerLasers } from './scene/setup_lights';
+import { setupLights, movingLights, laserLights, laserFansTop, laserFansBottom, spotLights, towerLasers } from './scene/setup_lights';
 import { cameraPosition } from 'three/examples/jsm/nodes/Nodes';
 import { crowd, setupCrowd } from './scene/setup_crowd';
 import { Device } from './assets/device';
@@ -87,7 +87,6 @@ if(camData){
     controls.target = new THREE.Vector3(d.lookAt.x, d.lookAt.y, d.lookAt.z)
 }
 
-
 export const BPM = 128;
 export const t_measure = 60 * 1000 / BPM * 4; 
 export const t_2note = t_measure / 2;
@@ -100,12 +99,14 @@ let frameCount = 0;
 let startTime = new Date().getTime();
 let firstRun = true;
 const animate = () => {
-    const t = (new Date().getTime() - startTime) / 1000 * 120;
+    const t = (new Date().getTime() - startTime) / 1000 * 120 + 2500;
     const ts = (new Date().getTime() - startTime) / 1000;
 
     // updating assets
     movingLights.forEach(ml => ml.update(t));
     laserLights.forEach(l => l.update(t));
+    laserFansTop.forEach(lft => lft.update(t));
+    laserFansBottom.forEach(lfb => lfb.update(t));
     pyroSparklers.forEach(pd => {
         if(pd.object.visible) pd.particleSimStep(t, pd);
         pd.update(t)
@@ -133,9 +134,67 @@ const animate = () => {
         rotation: camera.rotation,
         lookAt: controls.target
     }));
-    
-    // handle crowd logic
+
+    // update crowd
     updateCrowd(ts, firstRun, () => firstRun = false);
+    
+    console.log(t)
+
+    // is the intro
+    if (0 <= t && t <= 1000){
+        [...pyroJets, ...pyroSparklers, ...smokeJets].forEach(pd => pd.object.visible = false);
+        laserFansTop.forEach(l => l.object.visible = false);
+        laserFansBottom.forEach(l => l.object.visible = false);
+        setCrowdState(CrowdMode.SWAY);
+    }
+
+    // is the breakdown
+    else if (1000 < t && t <= 2000){
+        movingLights.forEach(ml => ml.object.visible = true);
+        laserFansTop.forEach(lft => lft.object.visible = true);
+        laserFansTop.forEach(lft => {lft.updateSpread(80.0 + 0.1*(t%100)); lft.update(t);}); // this 0.1 can be matched with the bpm
+        // laserFansTop.forEach(l => l.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), -Math.PI / 2 + (t%10000) * Math.PI / 2));
+        
+        laserFansBottom.forEach(lfb => lfb.object.visible = true);
+        laserFansBottom.forEach(lfb => {lfb.updateSpread(80.0 + 0.1*(t%100)); lfb.update(t);});
+        // laserFansBottom.forEach(l => l.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), -Math.PI / 2 + (t%10000) * Math.PI / 2));
+        
+        screenDevices.forEach(s => {s.object.fragShaderID = 1; s.update(t);});
+        setCrowdState(CrowdMode.BOP);
+    }
+
+    // is the buildup
+    else if (2000 < t && t <= 3000){
+        movingLights.forEach(ml => ml.object.visible = true);
+
+        laserFansTop.forEach(lft => lft.object.visible = true);
+        laserFansTop.forEach(lft => {lft.updateSpread(80.0 + 0.5*(t%100)); lft.update(t);});
+        // laserFansTop.forEach(lft => lft.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), (-Math.PI / 2) + (t%100)* Math.PI / 180));
+        
+        laserFansBottom.forEach(lfb => lfb.object.visible = true);
+        laserFansBottom.forEach(lfb => {lfb.updateSpread(80.0 + 0.5*(t%100)); lfb.update(t);});
+        // laserFansBottom.forEach(lfb => lfb.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), -Math.PI / 2 + (t%100)* 25 * Math.PI / 180));
+        
+        screenDevices.forEach(s => {s.object.fragShaderID = 2; s.update(t);});
+        setCrowdState(CrowdMode.BOP);
+    }
+
+    // is the drop
+    else if (3000 < t && t <= 4000){
+        pulsePyroJet(t_2note);
+        [...pyroJets, ...pyroSparklers, ...smokeJets].forEach(pd => pd.object.visible = true);
+        movingLights.forEach(ml => ml.object.visible = true);
+
+        laserFansTop.forEach(lft => lft.object.visible = true);
+        laserFansTop.forEach(lft => {lft.updateSpread(70.0 + 1.2*(t%100)); lft.update(t);});
+        // laserFansTop.forEach(l => l.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), -Math.PI / 2 + (t/10.0)* 25 * Math.PI / 180));
+        laserFansBottom.forEach(lfb => lfb.object.visible = true);
+        laserFansBottom.forEach(lfb => {lfb.updateSpread(70.0 + 1.2*(t%100)); lfb.update(t);});
+        // laserFansBottom.forEach(l => l.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), -Math.PI / 2 + (t/10.0)* 25 * Math.PI / 180));
+        
+        screenDevices.forEach(s => {s.object.fragShaderID = 3; s.update(t);});
+        setCrowdState(CrowdMode.JUMP);
+    }
     
     // three.js needs these funcitons to be called every time we render the scene
     controls.update();
@@ -193,6 +252,6 @@ const interval_test = () => {
 
     flashDevices(towerLasers, t_16note, t_measure, false);
 }
-interval_test();
-setInterval(interval_test, 2 * t_measure);
+// interval_test();
+// setInterval(interval_test, 2 * t_measure);
 

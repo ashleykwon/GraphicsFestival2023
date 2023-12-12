@@ -114,15 +114,17 @@ export class LaserScreen extends Device {
     position:  number[];
     planeWidth: number;
     planeHeight: number;
+    fragShaderID: number;
 
-    constructor(position: number[], orientation: number[], planeWidth: number, planeHeight: number){
+    constructor(position: number[], orientation: number[], planeWidth: number, planeHeight: number, fragShaderID: number){
         super();
         
         this.position = position;
         this.planeWidth = planeWidth;
         this.planeHeight = planeHeight;
+        this.fragShaderID = fragShaderID;
         
-  
+
         const geometry = new THREE.PlaneGeometry(this.planeWidth, this.planeHeight);
        
         const material = new THREE.ShaderMaterial({
@@ -135,6 +137,21 @@ export class LaserScreen extends Device {
             vertexShader: vertexShader,
             fragmentShader: fragmentShaderRandomColors
         });
+        
+        // material.needsUpdate=true;
+        // this.object.material.attributes.fragmentShader.needsUpdate = true;
+        if (fragShaderID == 1){
+            material.fragmentShader = fragmentShaderSolid;
+            console.log("frag shader ID changed");
+        }
+        if (fragShaderID == 2){
+            material.fragmentShader = fragmentShaderRandomColors;
+            console.log("frag shader ID changed");
+        }
+        if (fragShaderID == 3){
+            material.fragmentShader = fragmentShaderSparkle;
+            console.log("frag shader ID changed again");
+        }
 
         this.object = new THREE.Mesh(geometry, material);
         this.object.position.set(this.position[0], this.position[1], this.position[2]);
@@ -143,8 +160,10 @@ export class LaserScreen extends Device {
             position[1] + orientation[1],
             position[2] + orientation[2],
         ));
+        this.object.material = material;
+        this.object.material.needsUpdate = true;
         scene.add(this.object);
-
+    
         this.setModeAuto((t: number, device: Device) => {
             if(!this.object.visible) return;
             const d = device as LaserScreen;
