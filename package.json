@@ -15,7 +15,8 @@
   },
   "dependencies": {
     "@types/three": "^0.155.1",
-    "three": "^0.155.0"
+    "three": "^0.155.0",
+    "three-instanced-uniforms-mesh": "^0.49.0"
   },
   "author": "",
   "license": "ISC"

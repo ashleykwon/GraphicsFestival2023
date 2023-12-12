@@ -159,7 +159,7 @@ export const setupStage = () => {
         wireframeLinewidth: 5
     }); 
     cube = new THREE.Mesh(geometry, material); 
-    cube.position.set(-8, 12, 0)
+    cube.position.set(10, 12, 0)
     scene.add(cube);
 
     const loaded_scale = 0.3;
