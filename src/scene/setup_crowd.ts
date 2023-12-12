@@ -18,9 +18,7 @@ export const setupCrowd = () => {
         (object: THREE.Object3D) => {
             let bb = new THREE.Box3().setFromObject(object);
             let size = bb.getSize(new THREE.Vector3());
-            let factor = 2 / size.x; 
-
-            console.log(mat)
+            let factor = 2 / size.x;  
 
             const mesh1 = new InstancedUniformsMesh((object.children[0] as THREE.Mesh).geometry, mat, 350);
             mesh1.scale.set(factor, factor, factor)

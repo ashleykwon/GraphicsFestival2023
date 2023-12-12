@@ -95,16 +95,19 @@ if(camData){
 const randArray = new Array(1000).fill(0).map(() => Math.random());
 
 let frameCount = 0;
+let startTime = new Date().getTime();
 let firstRun = true;
 const animate = () => {
+    const t = (new Date().getTime() - startTime) / 1000 * 120;
+
     // updating assets
-    movingLights.forEach(ml => ml.update(frameCount));
-    laserLights.forEach(l => l.update(frameCount));
+    movingLights.forEach(ml => ml.update(t));
+    laserLights.forEach(l => l.update(t));
     pyroDevices.forEach(pd => {
-        if(pd.object.visible) pd.particleSimStep(frameCount, pd);
-        pd.update(frameCount)
+        if(pd.object.visible) pd.particleSimStep(t, pd);
+        pd.update(t)
     });
-    otherDevices.forEach(d => d.update(frameCount))
+    otherDevices.forEach(d => d.update(t))
 
     // update unique objects in the scene
     cube.rotateX(0.01);
@@ -133,7 +136,6 @@ const animate = () => {
         const spacing = 10;
 
         if(firstRun){
-            console.log("FIRST", crowd1, crowd2)
             for (let x = 0; x < 20; x ++) {
                 for (let y = 0; y < 15; y ++) {
                     crowd1.setUniformAt('diffuse', i, new THREE.Color(0xffffff * Math.random() | 0))
@@ -153,7 +155,7 @@ const animate = () => {
                 dummy1.scale.set(scale1, scale1, scale1);
                 dummy1.position.set(
                     offset1[0] - x * spacing + spacing * 0.5 * randArray[i - 3],
-                    offset1[1] + Math.sin(frameCount / 30 + Math.PI * 2 * randArray[i]) ** (20), 
+                    offset1[1] + Math.sin(t / 30 + Math.PI * 2 * randArray[i]) ** (20), 
                     offset1[2] - y * spacing + spacing * 0.5 * randArray[i + 3]
                 );
                 dummy1.updateMatrix();
@@ -163,7 +165,7 @@ const animate = () => {
                 dummy2.scale.set(scale2, scale2, scale2);
                 dummy2.position.set(
                     offset2[0] - x * spacing + spacing * 0.5 * randArray[j - 3],
-                    offset2[1] + Math.sin(frameCount / 30 + Math.PI * 2 * randArray[i]) ** (20), 
+                    offset2[1] + Math.sin(t / 30 + Math.PI * 2 * randArray[i]) ** (20), 
                     offset2[2] - y * spacing + spacing * 0.5 * randArray[j + 3]
                 );
                 dummy2.updateMatrix();
