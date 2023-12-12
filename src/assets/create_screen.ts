@@ -115,6 +115,7 @@ export class LaserScreen extends Device {
     planeWidth: number;
     planeHeight: number;
     fragShaderID: number;
+    material: THREE.ShaderMaterial;
 
     constructor(position: number[], orientation: number[], planeWidth: number, planeHeight: number, fragShaderID: number){
         super();
@@ -137,6 +138,7 @@ export class LaserScreen extends Device {
             vertexShader: vertexShader,
             fragmentShader: fragmentShaderRandomColors
         });
+        this.material = material;
         
         // material.needsUpdate=true;
         // this.object.material.attributes.fragmentShader.needsUpdate = true;
@@ -172,7 +174,26 @@ export class LaserScreen extends Device {
             }
             d.object.material.uniforms.u_time.value += 0.01;
         });
+    }
+    
+    changeProgram(id: number){
+        this.fragShaderID = id;
 
+        if(this.fragShaderID == 1){
+            this.material.fragmentShader = fragmentShaderSolid;
+            console.log("frag shader ID changed");
+        }
+
+        else if(this.fragShaderID == 2){
+            this.material.fragmentShader = fragmentShaderRandomColors;
+            console.log("frag shader ID changed");
+        }
         
+        else if(this.fragShaderID == 3){
+            this.material.fragmentShader = fragmentShaderSparkle;
+            console.log("frag shader ID changed again");
+        }
+
+        this.material.needsUpdate = true;
     }
 }

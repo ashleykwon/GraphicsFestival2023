@@ -8,7 +8,7 @@ export enum CrowdMode {
     JUMP
 }
 
-let crowdMode = CrowdMode.JUMP; // bop, jump
+let crowdMode = CrowdMode.SWAY; // bop, jump
 const randArray = new Array(1000).fill(0).map(() => Math.random());
 
 export const setCrowdState = (mode: CrowdMode) => {
