@@ -8,7 +8,7 @@ import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
 import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader';
 
 import { load_object } from './util/object_loader';
-import { setupStage, cube, pyroDevices, otherDevices } from './scene/setup_stage';
+import { setupStage, cube, pyroDevices, otherDevices, screenDevices } from './scene/setup_stage';
 import { setupLights, movingLights, laserLights } from './scene/setup_lights';
 import { cameraPosition } from 'three/examples/jsm/nodes/Nodes';
 import { crowd, setupCrowd } from './scene/setup_crowd';
@@ -107,7 +107,8 @@ const animate = () => {
         if(pd.object.visible) pd.particleSimStep(t, pd);
         pd.update(t)
     });
-    otherDevices.forEach(d => d.update(t))
+    otherDevices.forEach(d => d.update(frameCount));
+    screenDevices.forEach(d => d.update(frameCount));
 
     // update unique objects in the scene
     cube.rotateX(0.01);
