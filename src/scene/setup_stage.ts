@@ -53,7 +53,7 @@ export const setupStage = () => {
     pyroDevices.push(pyro3p)
     pyroDevices.push(pyro4p);
 
-    // pyroDevices.forEach(pd => pd.setModeOn())
+    pyroDevices.forEach(pd => pd.setModeOn())
     // pyroDevices.forEach(pd => pd.setModeOff())
     
     // const smoke1 = new SmokeJet([4, 0, 0], 1600, 8);
