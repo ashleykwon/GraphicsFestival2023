@@ -13,6 +13,7 @@ export let cube: THREE.Mesh;
 
 export let pyroDevices : (PyroSparkler | PyroJet | SmokeJet)[] = [];
 export let otherDevices : Device[] = [];
+export let screenDevices: LaserScreen[] = [];
 
 export const setupStage = () => {
     // pyro sparklers
@@ -65,34 +66,41 @@ export const setupStage = () => {
     const screenL2L = new LaserScreen([-8, 12.5, 47.5], [1, 0, 0.25], 18, 3.5);
     const screenL3L = new LaserScreen([-6.3, 17.6, 47.5], [1, 0, 0.25], 18, 3.5);
     const screenL4L = new LaserScreen([-5.3, 23.1, 47.5], [1, 0, 0.25], 18, 3.5);
+    screenDevices.push(screenL1L, screenL2L, screenL3L, screenL4L);
 
     const screenL1R = new LaserScreen([-9, 7.6, 47.5 + d_s], [1, 0, -0.25], 18, 3.5);
     const screenL2R = new LaserScreen([-8, 12.5, 47.5 + d_s], [1, 0, -0.25], 18, 3.5);
     const screenL3R = new LaserScreen([-6.3, 17.6, 47.5 + d_s], [1, 0, -0.25], 18, 3.5);
     const screenL4R = new LaserScreen([-5.3, 23.1, 47.5 + d_s], [1, 0, -0.25], 18, 3.5);
+    screenDevices.push(screenL1R, screenL2R, screenL3R, screenL4R);
 
     const screenC1L = new LaserScreen([-10.5, 7.6, 15.2], [1, 0, 0.25], 7, 3.5);
     const screenC2L = new LaserScreen([-8.8, 12.5, 13], [1, 0, 0.25], 12, 3.5);
     const screenC3L = new LaserScreen([-6.8, 17.4, 10.5], [1, 0, 0.25], 17, 3.5);
     const screenC4L = new LaserScreen([-5.3, 23.1, 9.5], [1, 0, 0.25], 18, 3.5);
+    screenDevices.push(screenC1L, screenC2L, screenC3L, screenC4L);
 
     const screenC1R = new LaserScreen([-10.5, 7.6, -15.2], [1, 0, -0.25], 7, 3.5);
     const screenC2R = new LaserScreen([-8.8, 12.5, -13], [1, 0, -0.25], 12, 3.5);
     const screenC3R = new LaserScreen([-6.8, 17.4, -10.5], [1, 0, -0.25], 17, 3.5);
     const screenC4R = new LaserScreen([-5.3, 23.1, -9.5], [1, 0, -0.25], 18, 3.5);
+    screenDevices.push(screenC1R, screenC2R, screenC3R, screenC4R);
 
     const screenR1L = new LaserScreen([-9, 7.6, -47.5], [1, 0, -0.25], 18, 3.5);
     const screenR2L = new LaserScreen([-8, 12.5, -47.5], [1, 0, -0.25], 18, 3.5);
     const screenR3L = new LaserScreen([-6.3, 17.6, -47.5], [1, 0, -0.25], 18, 3.5);
     const screenR4L = new LaserScreen([-4.8, 23.1, -47.5], [1, 0, -0.25], 18, 3.5);
+    screenDevices.push(screenR1L, screenR2L, screenR3L, screenR4L);
 
     const screenR1R = new LaserScreen([-9, 7.6, -47.5 - d_s], [1, 0, 0.25], 18, 3.5);
     const screenR2R = new LaserScreen([-8, 12.5, -47.5 - d_s], [1, 0, 0.25], 18, 3.5);
     const screenR3R = new LaserScreen([-6.3, 17.6, -47.5 - d_s], [1, 0, 0.25], 18, 3.5);
     const screenR4R = new LaserScreen([-5.3, 23.1, -47.5 - d_s], [1, 0, 0.25], 18, 3.5);
+    screenDevices.push(screenR1R, screenR2R, screenR3R, screenR4R);
 
     const screenC = new LaserScreen([-10, 39, -0.3], [1, 0, 0], 16, 10);
-
+    screenDevices.push(screenC);
+    
     // light strips
     const lstripL1 = new LightStrip(0x00ffaa, [-5, 4.5, 57], [0, 4.5, 38.5])
     const lstripL2 = new LightStrip(0x00ffaa, [0, 4.5, 57 - 19], [-5, 4.5, 38 - 19])

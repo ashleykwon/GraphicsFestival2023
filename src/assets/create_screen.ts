@@ -19,35 +19,28 @@ void main() {
 }
 `;
 
-const fragmentShader = `
+const fragmentShaderSolid = `
 uniform float u_time;
 varying vec2 vUv;
 
 vec3 palette(float t){
-    vec3 a = vec3(0.650, 0.500, 0.310);
-    vec3 b = vec3(-0.650, 0.500, 0.600);
-    vec3 c = vec3(0.538, 2.358, 3.028);
-    vec3 d = vec3(0.758, 0.498, 0.667);
+    vec3 a = vec3(0.358, -0.042, 0.358);
+    vec3 b = vec3(0.500, -0.882, 0.500);
+    vec3 c = vec3(0.188, 0.008, 0.588);
+    vec3 d = vec3(0.000, 0.333, 0.667);
     return a + b*cos(6.28318*(c*t +d));
 }
 
+
 void main() {
-    float angle = u_time*0.2;
-    vec2 normalizedCoord = -1.0 + 2.0 *vUv *2.0 - 1.0;
-    for (float i = 0.0; i < 30.0; i++){
-        normalizedCoord = abs(normalizedCoord);
-        normalizedCoord -= 0.8; // larger value means less initial granularity
-        normalizedCoord *= 1.1;
-        normalizedCoord *= mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
-    } 
-    gl_FragColor = 0.3*vec4(palette(length(normalizedCoord)), 1.0); // adjust this 0.3 here to reduce brightness
+   
+    gl_FragColor = vec4(palette(u_time), 1.0); // adjust this 0.3 here to reduce brightness
 
 }
 `;
 
 
-const fragmentShaderTwo = `
-uniform vec3 lineColor;
+const fragmentShaderSparkle = `
 uniform float u_time;
 
 varying vec2 vUv;
@@ -64,6 +57,7 @@ void main() {
     float angle = u_time*0.3;
     vec2 normalizedCoord = -1.0 + 2.0 *vUv *2.0 - 1.0; // -1 to 1
     vec2 originalUV = normalizedCoord;
+    normalizedCoord[1] /= 2.0;
     vec3 finalColor = vec3(0.0);
 
     for (float i = 0.0; i < 3.0; i++){ // 3 is the number of fractal layers
@@ -84,9 +78,10 @@ void main() {
 
 
 
-const fragmentShaderThree = `
+const fragmentShaderRandomColors = `
 uniform vec3 lineColor;
 uniform float u_time;
+uniform int patternID;
 
 #define PI 3.14159265359
 #define TWO_PI 6.28318530718
@@ -101,52 +96,64 @@ vec3 palette(float t){
     return a + b*cos(6.28318*(c*t +d));
 }
 
-float rand(vec2 co){
-    return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
-}
-
 void main() {
-    vec2 normalizedCoord = -1.0 + 2.0 *vUv *2.0 - 1.0;
-    vec2 originalUV = normalizedCoord;
-    vec3 finalColor = vec3(0.0);
-    int N = 12;
-
-    float a = atan(normalizedCoord.x,normalizedCoord.y)+PI;
-    float r = TWO_PI/float(N);
-
-    float d = cos(floor(1.5+a/r)*r-a)*length(normalizedCoord) - u_time*0.2;
-    if (d < 0.7){
-        d = 1.0;
+    if (patternID == 0){
+        gl_FragColor = vec4(palette(u_time), 1.0);
+    }
+    else if (patternID == 1){
+        gl_FragColor = vec4(palette(u_time + 0.5), 1.0);
     }
     else{
-        d = 0.0;
+        gl_FragColor = vec4(palette(u_time - 0.5), 1.0);
     }
-    vec3 screenColor = palette(d + u_time);
-    finalColor += screenColor * d;
-
-    gl_FragColor = vec4(finalColor, 1.0);
 }
 `;
 
+
 export class LaserScreen extends Device {
+    position:  number[];
+    planeWidth: number;
+    planeHeight: number;
+
     constructor(position: number[], orientation: number[], planeWidth: number, planeHeight: number){
         super();
-
-        const geometry = new THREE.PlaneGeometry(planeWidth, planeHeight);
-        const material = new THREE.MeshBasicMaterial({
-            color: 0x66ff00,
-            side: THREE.DoubleSide
+        
+        this.position = position;
+        this.planeWidth = planeWidth;
+        this.planeHeight = planeHeight;
+        
+  
+        const geometry = new THREE.PlaneGeometry(this.planeWidth, this.planeHeight);
+       
+        const material = new THREE.ShaderMaterial({
+            uniforms: {
+                planeWidth: {value: this.planeWidth},
+                planeHeight: {value: this.planeHeight},
+                u_time: {value: 0.0},
+                patternID : {value: Math.random()*(2-0)+0}
+            },
+            vertexShader: vertexShader,
+            fragmentShader: fragmentShaderRandomColors
         });
-        const plane = new THREE.Mesh(geometry, material);
-        plane.position.set(position[0], position[1], position[2]);
-        plane.lookAt(new THREE.Vector3(
+
+        this.object = new THREE.Mesh(geometry, material);
+        this.object.position.set(this.position[0], this.position[1], this.position[2]);
+        this.object.lookAt(new THREE.Vector3(
             position[0] + orientation[0],
             position[1] + orientation[1],
             position[2] + orientation[2],
         ));
+        scene.add(this.object);
 
-        scene.add(plane);
+        this.setModeAuto((t: number, device: Device) => {
+            if(!this.object.visible) return;
+            const d = device as LaserScreen;
+            if (d.object.material.uniforms.u_time.value >= 2.0){
+                d.object.material.uniforms.u_time.value = 0;
+            }
+            d.object.material.uniforms.u_time.value += 0.01;
+        });
 
-        this.object = plane;
+        
     }
 }
