@@ -9,7 +9,7 @@ import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader';
 
 import { load_object } from './util/object_loader';
 import { setupStage, cube, pyroDevices, otherDevices, screenDevices } from './scene/setup_stage';
-import { setupLights, movingLights, laserLights } from './scene/setup_lights';
+import { setupLights, movingLights, laserLights, laserFansTop, laserFansBottom } from './scene/setup_lights';
 import { cameraPosition } from 'three/examples/jsm/nodes/Nodes';
 import { crowd, setupCrowd } from './scene/setup_crowd';
 
@@ -99,10 +99,12 @@ let startTime = new Date().getTime();
 let firstRun = true;
 const animate = () => {
     const t = (new Date().getTime() - startTime) / 1000 * 120;
-
+    
     // updating assets
     movingLights.forEach(ml => ml.update(t));
     laserLights.forEach(l => l.update(t));
+    laserFansTop.forEach(lft => lft.update(t));
+    laserFansBottom.forEach(lfb => lfb.update(t));
     pyroDevices.forEach(pd => {
         if(pd.object.visible) pd.particleSimStep(t, pd);
         pd.update(t)
@@ -176,6 +178,58 @@ const animate = () => {
     
         crowd1.instanceMatrix.needsUpdate = true;
         crowd2.instanceMatrix.needsUpdate = true;
+
+        // is the intro
+        if (0 <= t && t <= 1000){
+            pyroDevices.forEach(pd => pd.object.visible = false);
+            laserFansTop.forEach(l => l.object.visible = false);
+            laserFansBottom.forEach(l => l.object.visible = false);
+        }
+
+        // is the breakdown
+        else if (1000 < t && t <= 2000){
+            movingLights.forEach(ml => ml.object.visible = true);
+            laserFansTop.forEach(lft => lft.object.visible = true);
+            laserFansTop.forEach(lft => {lft.updateSpread(80.0 + 0.1*(t%100)); lft.update(t);}); // this 0.1 can be matched with the bpm
+            // laserFansTop.forEach(l => l.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), -Math.PI / 2 + (t%10000) * Math.PI / 2));
+            
+            laserFansBottom.forEach(lfb => lfb.object.visible = true);
+            laserFansBottom.forEach(lfb => {lfb.updateSpread(80.0 + 0.1*(t%100)); lfb.update(t);});
+            // laserFansBottom.forEach(l => l.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), -Math.PI / 2 + (t%10000) * Math.PI / 2));
+            
+            screenDevices.forEach(s => {s.object.fragShaderID = 1; s.update(t);});
+        }
+
+        // is the buildup
+        else if (2000 < t && t <= 3000){
+            movingLights.forEach(ml => ml.object.visible = true);
+
+            laserFansTop.forEach(lft => lft.object.visible = true);
+            laserFansTop.forEach(lft => {lft.updateSpread(80.0 + 0.5*(t%100)); lft.update(t);});
+            // laserFansTop.forEach(lft => lft.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), (-Math.PI / 2) + (t%100)* Math.PI / 180));
+            
+            laserFansBottom.forEach(lfb => lfb.object.visible = true);
+            laserFansBottom.forEach(lfb => {lfb.updateSpread(80.0 + 0.5*(t%100)); lfb.update(t);});
+            // laserFansBottom.forEach(lfb => lfb.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), -Math.PI / 2 + (t%100)* 25 * Math.PI / 180));
+            
+            screenDevices.forEach(s => {s.object.fragShaderID = 2; s.update(t);});
+        }
+
+        // is the drop
+        else if (3000 < t && t <= 4000){
+            pyroDevices.forEach(pd => pd.object.visible = true);
+            movingLights.forEach(ml => ml.object.visible = true);
+
+            laserFansTop.forEach(lft => lft.object.visible = true);
+            laserFansTop.forEach(lft => {lft.updateSpread(70.0 + 1.2*(t%100)); lft.update(t);});
+            // laserFansTop.forEach(l => l.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), -Math.PI / 2 + (t/10.0)* 25 * Math.PI / 180));
+            laserFansBottom.forEach(lfb => lfb.object.visible = true);
+            laserFansBottom.forEach(lfb => {lfb.updateSpread(70.0 + 1.2*(t%100)); lfb.update(t);});
+            // laserFansBottom.forEach(l => l.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), -Math.PI / 2 + (t/10.0)* 25 * Math.PI / 180));
+            
+            screenDevices.forEach(s => {s.object.fragShaderID = 3; s.update(t);});
+        }
+
     }
     
 
