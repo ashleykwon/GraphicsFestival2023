@@ -160,12 +160,12 @@ console.log(t_measure, t_4note);
 // prep scene for main loop
 if(stageID == 0){
     const camData = localStorage.getItem("cameraPos");
-    if(camData){
-        const d = JSON.parse(camData)
-        camera.position.set(d.position.x, d.position.y, d.position.z);
-        camera.rotation.set(d.rotation._x, d.rotation._y, d.rotation._z);
-        controls.target = new THREE.Vector3(d.lookAt.x, d.lookAt.y, d.lookAt.z)
-    }
+    // if(camData){
+    //     const d = JSON.parse(camData)
+    //     camera.position.set(d.position.x, d.position.y, d.position.z);
+    //     camera.rotation.set(d.rotation._x, d.rotation._y, d.rotation._z);
+    //     controls.target = new THREE.Vector3(d.lookAt.x, d.lookAt.y, d.lookAt.z)
+    // }
 
     laserFansTop.forEach(lf => lf.setModeOff());
     laserFansBottom.forEach(lf => lf.setModeOff());
