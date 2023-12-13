@@ -62,7 +62,7 @@ export const setupStage = () => {
     const smokeA = new SmokeJet([-12.5, 2, 63.5 + 1], 3*800, 20);
     const smokeB = new SmokeJet([-12.5, 2, -(63.5 + 1)], 3*800, 20);
     const smokeC = new SmokeJet([24.5, 2, 83.5], 3*800, 20);
-    const smokeD = new SmokeJet([24.5, 2, -83.5], 3*800, 20);
+    const smokeD = new SmokeJet([24.5, 2, -83.5 - 3.5], 3*800, 20);
     smokeJets.push(smokeA);
     smokeJets.push(smokeB);
     smokeJets.push(smokeC);
@@ -158,29 +158,65 @@ export const setupStage = () => {
     const lstripCB4 = new LightStrip(0x00ffaa, [-5, 7.9, 6], [-11, 7.9, 6])
     lightStrips.push(lstripCB1, lstripCB2, lstripCB3, lstripCB4);
 
-    const lstripT1L1 = new LightStrip(0x00ffaa, [-17, 1, 59.5], [-17, 41, 59.5]) // light tower L1
-    const lstripT1L2 = new LightStrip(0x00ffaa, [-17, 1, 68], [-17, 41, 68])
-    const lstripT1L3 = new LightStrip(0x00ffaa, [-8.5, 1, 59.5], [-8.5, 41, 59.5])
-    const lstripT1L4 = new LightStrip(0x00ffaa, [-8.5, 1, 68], [-8.5, 41, 68])
+    let lt1_offset = [0, -0.5];
+    const lstripT1L1 = new LightStrip(0x00ffaa, 
+        [-17 + lt1_offset[0], 1, 59.5 + lt1_offset[1]], 
+        [-17 + lt1_offset[0], 41, 59.5 + lt1_offset[1]]) // light tower L1
+    const lstripT1L2 = new LightStrip(0x00ffaa, 
+        [-17 + lt1_offset[0], 1, 68 + lt1_offset[1]], 
+        [-17 + lt1_offset[0], 41, 68 + lt1_offset[1]])
+    const lstripT1L3 = new LightStrip(0x00ffaa, 
+        [-8.5 + lt1_offset[0], 1, 59.5 + lt1_offset[1]], 
+        [-8.5 + lt1_offset[0], 41, 59.5 + lt1_offset[1]])
+    const lstripT1L4 = new LightStrip(0x00ffaa, 
+        [-8.5 + lt1_offset[0], 1, 68 + lt1_offset[1]], 
+        [-8.5 + lt1_offset[0], 41, 68 + lt1_offset[1]])
     lightStrips.push(lstripT1L1, lstripT1L2, lstripT1L3, lstripT1L4);
 
     let lt_offset = [37.5, 19.5];
-    const lstripT2L1 = new LightStrip(0x00ffaa, [-17 + lt_offset[0], 1, 59.5 + lt_offset[1]], [-17 + lt_offset[0], 21, 59.5 + lt_offset[1]]) // light tower L2
-    const lstripT2L2 = new LightStrip(0x00ffaa, [-17 + lt_offset[0], 1, 68 + lt_offset[1]], [-17 + lt_offset[0], 21, 68 + lt_offset[1]])
-    const lstripT2L3 = new LightStrip(0x00ffaa, [-8.5 + lt_offset[0], 1, 59.5 + lt_offset[1]], [-8.5 + lt_offset[0], 21, 59.5 + lt_offset[1]])
-    const lstripT2L4 = new LightStrip(0x00ffaa, [-8.5 + lt_offset[0], 1, 68 + lt_offset[1]], [-8.5 + lt_offset[0], 21, 68 + lt_offset[1]])
+    let lt2_offset = [0, 0.5];
+    const lstripT2L1 = new LightStrip(0x00ffaa, 
+        [-17 + lt_offset[0] + lt2_offset[0], 1, 59.5 + lt_offset[1] + lt2_offset[1]], 
+        [-17 + lt_offset[0] + lt2_offset[0], 21, 59.5 + lt_offset[1] + lt2_offset[1]]) // light tower L2
+    const lstripT2L2 = new LightStrip(0x00ffaa, 
+        [-17 + lt_offset[0] + lt2_offset[0], 1, 68 + lt_offset[1] + lt2_offset[1]], 
+        [-17 + lt_offset[0] + lt2_offset[0], 21, 68 + lt_offset[1] + lt2_offset[1]])
+    const lstripT2L3 = new LightStrip(0x00ffaa, 
+        [-8.5 + lt_offset[0] + lt2_offset[0], 1, 59.5 + lt_offset[1] + lt2_offset[1]], 
+        [-8.5 + lt_offset[0] + lt2_offset[0], 21, 59.5 + lt_offset[1] + lt2_offset[1]])
+    const lstripT2L4 = new LightStrip(0x00ffaa, 
+        [-8.5 + lt_offset[0] + lt2_offset[0], 1, 68 + lt_offset[1] + lt2_offset[1]], 
+        [-8.5 + lt_offset[0] + lt2_offset[0], 21, 68 + lt_offset[1] + lt2_offset[1]])
     lightStrips.push(lstripT2L1, lstripT2L2, lstripT2L3, lstripT2L4);
 
-    const lstripT1R1 = new LightStrip(0x00ffaa, [-17, 1, -59.5], [-17, 41, -59.5]) // light tower R1
-    const lstripT1R2 = new LightStrip(0x00ffaa, [-17, 1, -68], [-17, 41, -68])
-    const lstripT1R3 = new LightStrip(0x00ffaa, [-8.5, 1, -59.5], [-8.5, 41, -59.5])
-    const lstripT1R4 = new LightStrip(0x00ffaa, [-8.5, 1, -68], [-8.5, 41, -68])
+    const rt1_offset = [0, 0.2];
+    const lstripT1R1 = new LightStrip(0x00ffaa,
+        [-17 + rt1_offset[0], 1, -59.5 + rt1_offset[1]], 
+        [-17 + rt1_offset[0], 41, -59.5 + rt1_offset[1]]) // light tower R1
+    const lstripT1R2 = new LightStrip(0x00ffaa, 
+        [-17 + rt1_offset[0], 1, -68 + rt1_offset[1]], 
+        [-17 + rt1_offset[0], 41, -68 + rt1_offset[1]])
+    const lstripT1R3 = new LightStrip(0x00ffaa, 
+        [-8.5 + rt1_offset[0], 1, -59.5 + rt1_offset[1]], 
+        [-8.5 + rt1_offset[0], 41, -59.5 + rt1_offset[1]])
+    const lstripT1R4 = new LightStrip(0x00ffaa, 
+        [-8.5 + rt1_offset[0], 1, -68 + rt1_offset[1]], 
+        [-8.5 + rt1_offset[0], 41, -68 + rt1_offset[1]])
     lightStrips.push(lstripT1R1, lstripT1R2, lstripT1R3, lstripT1R4);
 
-    const lstripT2R1 = new LightStrip(0x00ffaa, [-17 + lt_offset[0], 1, -59.5 - lt_offset[1]], [-17 + lt_offset[0], 21, -59.5 - lt_offset[1]]) // light tower R2
-    const lstripT2R2 = new LightStrip(0x00ffaa, [-17 + lt_offset[0], 1, -68 - lt_offset[1]], [-17 + lt_offset[0], 21, -68 - lt_offset[1]])
-    const lstripT2R3 = new LightStrip(0x00ffaa, [-8.5 + lt_offset[0], 1, -59.5 - lt_offset[1]], [-8.5 + lt_offset[0], 21, -59.5 - lt_offset[1]])
-    const lstripT2R4 = new LightStrip(0x00ffaa, [-8.5 + lt_offset[0], 1, -68 - lt_offset[1]], [-8.5 + lt_offset[0], 21, -68 - lt_offset[1]])
+    const rt2_offset = [0, -3.5];
+    const lstripT2R1 = new LightStrip(0x00ffaa, 
+        [-17 + lt_offset[0] + rt2_offset[0], 1, -59.5 - lt_offset[1] + rt2_offset[1]], 
+        [-17 + lt_offset[0] + rt2_offset[0], 21, -59.5 - lt_offset[1] + rt2_offset[1]]) // light tower R2
+    const lstripT2R2 = new LightStrip(0x00ffaa, 
+        [-17 + lt_offset[0] + rt2_offset[0], 1, -68 - lt_offset[1] + rt2_offset[1]], 
+        [-17 + lt_offset[0] + rt2_offset[0], 21, -68 - lt_offset[1] + rt2_offset[1]])
+    const lstripT2R3 = new LightStrip(0x00ffaa, 
+        [-8.5 + lt_offset[0] + rt2_offset[0], 1, -59.5 - lt_offset[1] + rt2_offset[1]], 
+        [-8.5 + lt_offset[0] + rt2_offset[0], 21, -59.5 - lt_offset[1] + rt2_offset[1]])
+    const lstripT2R4 = new LightStrip(0x00ffaa, 
+        [-8.5 + lt_offset[0] + rt2_offset[0], 1, -68 - lt_offset[1] + rt2_offset[1]], 
+        [-8.5 + lt_offset[0] + rt2_offset[0], 21, -68 - lt_offset[1] + rt2_offset[1]])
     lightStrips.push(lstripT2R1, lstripT2R2, lstripT2R3, lstripT2R4);
 
     // const dome = new Dome();
