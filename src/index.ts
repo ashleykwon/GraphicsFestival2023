@@ -20,6 +20,8 @@ import { crossfadeLightStrips, crossfadeMovingLights, crossfadeTowerLasers, puls
 import Timeline from '../assets/song.json';
 import { PyroJet } from './assets/create_pyro_jet';
 import { PyroJetPartial } from './assets/create_pyro_jet_partial';
+import { PyroSparklerPartial } from './assets/create_pyro_sparkler_partial';
+import { SmokeJetPartial } from './assets/create_smoke_jet_partial';
 
 // **********************
 // INITIALIZE THREE.JS
@@ -33,7 +35,8 @@ scene.fog = new THREE.FogExp2(0x000000, 0.005);
 
 export const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.01, 1000 );
 camera.position.set(20, 10, 0);
-const screenDimensions = [1500 * 2, 700 * 2];
+const screenDimensions = [1920 * 2, 1080 * 2];
+// const screenDimensions = [1500, 700];
 
 const renderer = new THREE.WebGLRenderer({
     canvas: document.getElementById('main-canvas') as HTMLCanvasElement,
@@ -57,10 +60,18 @@ if(stageID == 0){
 }
 
 else if(stageID == 1){
-    const pyroA = new PyroJetPartial([0, 0, -12], 2*800, 12, 3);
-    const pyroB = new PyroJetPartial([0, 0, -4], 2*800, 12, 2);
-    const pyroC = new PyroJetPartial([0, 0, 4], 2*800, 12, 1);
-    const pyroD = new PyroJetPartial([0, 0, 12], 2*800, 12, 0);
+    const pyroA = new PyroJetPartial([0, 0, -15], 2*800, 12, 3);
+    const pyroB = new PyroJetPartial([0, 0, -5], 2*800, 12, 2);
+    const pyroC = new PyroJetPartial([0, 0, 5], 2*800, 12, 1);
+    const pyroD = new PyroJetPartial([0, 0, 15], 2*800, 12, 0);
+    // const pyroA = new PyroSparklerPartial([0, 0, -12], 2*800, 12, 3);
+    // const pyroB = new PyroSparklerPartial([0, 0, -4], 2*800, 12, 2);
+    // const pyroC = new PyroSparklerPartial([0, 0, 4], 2*800, 12, 1);
+    // const pyroD = new PyroSparklerPartial([0, 0, 12], 2*800, 12, 0);
+    // const pyroA = new SmokeJetPartial([0, 0, -12], 2*800, 14, 3);
+    // const pyroB = new SmokeJetPartial([0, 0, -4], 2*800, 14, 2);
+    // const pyroC = new SmokeJetPartial([0, 0, 4], 2*800, 14, 1);
+    // const pyroD = new SmokeJetPartial([0, 0, 12], 2*800, 14, 0);
     pyroA.setModeOn();
     pyroB.setModeOn();
     pyroC.setModeOn();
@@ -92,6 +103,9 @@ bloomPass.threshold = params.threshold;
 bloomPass.strength = params.strength;
 bloomPass.radius = params.radius;
 const fxaaPass = new ShaderPass(FXAAShader);
+const pixelRatio = renderer.getPixelRatio();
+fxaaPass.uniforms['resolution'].value.x = 1 / (screenDimensions[0] * pixelRatio);
+fxaaPass.uniforms['resolution'].value.y = 1 / (screenDimensions[1] * pixelRatio);
 const outputPass = new OutputPass();
 
 const composer = new EffectComposer(renderer);
@@ -100,6 +114,7 @@ composer.addPass(renderScene2);
 composer.addPass(renderScene3);
 composer.addPass(bloomPass);
 composer.addPass(outputPass);
+composer.addPass(fxaaPass);
 
 // **********************
 // RENDER LOOP
@@ -563,19 +578,26 @@ if(stageID == 0){
 }
 
 else if(stageID == 1){
+    let started = false;
+    document.body.addEventListener('keydown', (e) => {
+        if(e.key == ' ') started = true;
+    });
+
     let frameCount = 0;
     let startTime = new Date().getTime();
 
     const animate = () => {
-        const ms_difference = (new Date().getTime() - startTime);
-        const t = ms_difference / 1000 * 120;
-        const tms = ms_difference;
-        const ts = tms / 1000;
-
-        pyroJets.forEach(pd => {
-            pd.particleSimStep(t, pd);
-            pd.update(t)
-        });
+        if(started){
+            const ms_difference = (new Date().getTime() - startTime);
+            const t = ms_difference / 1000 * 120;
+            const tms = ms_difference;
+            const ts = tms / 1000;
+    
+            pyroJets.forEach(pd => {
+                pd.particleSimStep(t, pd);
+                pd.update(t)
+            }); 
+        }
 
         controls.update();
         composer.render();

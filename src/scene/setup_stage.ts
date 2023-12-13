@@ -59,10 +59,10 @@ export const setupStage = () => {
     pyroJets.push(pyro4p);
 
     // smoke jets
-    const smokeA = new SmokeJet([-12.5, 2, 63.5 + 1], 3*800, 16);
-    const smokeB = new SmokeJet([-12.5, 2, -(63.5 + 1)], 3*800, 16);
-    const smokeC = new SmokeJet([24.5, 2, 83.5], 3*800, 16);
-    const smokeD = new SmokeJet([24.5, 2, -83.5], 3*800, 16);
+    const smokeA = new SmokeJet([-12.5, 2, 63.5 + 1], 3*800, 20);
+    const smokeB = new SmokeJet([-12.5, 2, -(63.5 + 1)], 3*800, 20);
+    const smokeC = new SmokeJet([24.5, 2, 83.5], 3*800, 20);
+    const smokeD = new SmokeJet([24.5, 2, -83.5], 3*800, 20);
     smokeJets.push(smokeA);
     smokeJets.push(smokeB);
     smokeJets.push(smokeC);
