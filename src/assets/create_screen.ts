@@ -144,15 +144,12 @@ export class LaserScreen extends Device {
         // this.object.material.attributes.fragmentShader.needsUpdate = true;
         if (fragShaderID == 1){
             material.fragmentShader = fragmentShaderSolid;
-            console.log("frag shader ID changed");
         }
         if (fragShaderID == 2){
             material.fragmentShader = fragmentShaderRandomColors;
-            console.log("frag shader ID changed");
         }
         if (fragShaderID == 3){
             material.fragmentShader = fragmentShaderSparkle;
-            console.log("frag shader ID changed again");
         }
 
         this.object = new THREE.Mesh(geometry, material);
@@ -181,17 +178,14 @@ export class LaserScreen extends Device {
 
         if(this.fragShaderID == 1){
             this.material.fragmentShader = fragmentShaderSolid;
-            console.log("frag shader ID changed");
         }
 
         else if(this.fragShaderID == 2){
             this.material.fragmentShader = fragmentShaderRandomColors;
-            console.log("frag shader ID changed");
         }
         
         else if(this.fragShaderID == 3){
             this.material.fragmentShader = fragmentShaderSparkle;
-            console.log("frag shader ID changed again");
         }
 
         this.material.needsUpdate = true;

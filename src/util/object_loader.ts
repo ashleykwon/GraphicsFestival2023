@@ -13,6 +13,8 @@ export const load_object = (
     loader.load(
         path,
         (object) => {
+            console.log(`Finished loading OBJ object ${path}`);
+            
             transform_function(object);
     
             if(add){
@@ -23,7 +25,7 @@ export const load_object = (
                 scene.add(object);
             }
         },
-        (xhr) => console.log((xhr.loaded / xhr.total * 100) + '% loaded'),
+        (xhr) => {/*console.log((xhr.loaded / xhr.total * 100) + '% loaded')*/},
         (error) => console.log('An error happened', error)
     );
 }

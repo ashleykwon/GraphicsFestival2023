@@ -17,6 +17,8 @@ import { SpotLight } from './assets/create_spot_light';
 import { CrowdMode, setCrowdState, updateCrowd } from './scene/update_crowd';
 import { crossfadeLightStrips, crossfadeTowerLasers, sparkleSpotlights } from './scene/light_effects';
 
+import * as Timeline from '../assets/song.json';
+
 // **********************
 // INITIALIZE THREE.JS
 // **********************
@@ -97,7 +99,7 @@ laserFansBottom.forEach(lf => lf.setModeOff());
 towerLasers.forEach(tl => tl.setModeOff());
 
 // main loop logic
-export const BPM = 128;
+export const BPM = Timeline.bpm;
 export const t_measure = 60 * 1000 / BPM * 4; 
 export const t_2note = t_measure / 2;
 export const t_4note = t_measure / 4;
@@ -106,17 +108,51 @@ export const t_16note = t_measure / 16;
 console.log(t_measure, t_4note);
 
 // start song trigger function
+let startAudioAtMs = 39375; // 39375;
+let attack = 0;
 let songStarted = false;
-let audio: HTMLAudioElement;
+let audio = new Audio('../assets/Yottabyte.mp3');
+audio.oncanplay = () => console.log("AUDIO LOADED")
+let timefile: [string, number[]][];
 const startSong = () => {
-    if(audio){
-        audio.pause();
-        audio.remove();
-    }
-    audio = new Audio('../assets/Yottabyte.mp3');
-    // audio.play();
+    audio.currentTime = startAudioAtMs / 1000;
+    audio.play();
     songStarted = true;
     startTime = new Date().getTime();
+
+    const pair_diff = (pair: number[]) => pair[1] - pair[0];
+    timefile = [
+        ['intro', Timeline.first.intro],
+        ['breakdown', Timeline.first.breakdown],
+        ['build-8', Timeline.first['build-8']],
+        ['build-16', Timeline.first['build-16']],
+        ['build-32', Timeline.first['build-32']],
+        ['build-rest', Timeline.first['build-rest']],
+        ['drop', Timeline.first.drop]
+    ];
+
+    let counter = 0;
+    setCrowdState(CrowdMode.BOP);
+    const interval_test = () => {
+        sparkleSpotlights(t_measure);
+        pulsePyroJet(t_2note);
+
+        // if(counter % 3 == 0) setCrowdState(CrowdMode.SWAY);
+        // if(counter % 3 == 1) setCrowdState(CrowdMode.BOP);
+        // if(counter % 3 == 2) setCrowdState(CrowdMode.JUMP);
+        // counter += 1;
+
+        crossfadeLightStrips(0xaaff00, 0x00aaff, 2 * t_measure);
+        crossfadeTowerLasers(0x00aaff, 0xaaff00, 2 * t_measure);
+
+        flashDevices(towerLasers, t_16note, t_measure, false);
+    }
+    
+    setTimeout(() => {
+        interval_test();
+        setInterval(interval_test, 2 * t_measure)
+    }, t_measure);
+    
 }
 document.body.addEventListener('keydown', (e) => {
     if(e.key == ' ') startSong();
@@ -126,14 +162,24 @@ document.body.addEventListener('keydown', (e) => {
 let frameCount = 0;
 let startTime = new Date().getTime();
 let firstRun = true;
+let currentStageName = '';
 const animate = () => {
-    const t = (new Date().getTime() - startTime) / 1000 * 120 ;
-    const ts = (new Date().getTime() - startTime) / 1000;
+    const ms_difference = (new Date().getTime() - startTime) + startAudioAtMs;
+    const t = ms_difference / 1000 * 120;
+    const tms = ms_difference;
+    const ts = tms / 1000;
 
     // update crowd
     updateCrowd(ts, firstRun, () => firstRun = false);
 
     if(songStarted){
+        let currentTimeFile = timefile.find(pair => pair[1][0] <= tms && tms <= pair[1][1]) as [string, number[]];
+        if(currentTimeFile === undefined) currentTimeFile = ['', []];
+
+        let newStageEntered = false;
+        if(currentTimeFile[0] != currentStageName) newStageEntered = true;
+        currentStageName = currentTimeFile[0];
+        
         // updating assets
         movingLights.forEach(ml => ml.update(t));
         laserLights.forEach(l => l.update(t));
@@ -158,8 +204,7 @@ const animate = () => {
         lightStrips.forEach(ls => ls.update(ts));
         towerLasers.forEach(l => l.update(ts));
 
-        // update unique objects in the scene
-        cube.rotateX(0.01);
+        cube.rotateX(0.01); // update unique objects in the scene
         cube.rotateY(0.01);
         localStorage.setItem("cameraPos", JSON.stringify({
             position: camera.position,
@@ -167,65 +212,134 @@ const animate = () => {
             lookAt: controls.target
         }));
 
-        console.log(t)
-
         // is the intro
-        if (0 <= t && t <= 1000){
-            [...pyroJets, ...pyroSparklers, ...smokeJets].forEach(pd => pd.object.visible = false);
-            laserFansTop.forEach(l => l.object.visible = false);
-            laserFansBottom.forEach(l => l.object.visible = false);
-            setCrowdState(CrowdMode.SWAY);
+        if(currentTimeFile[0] == 'intro'){
+            if(newStageEntered){
+                console.log("INTRO");
+
+                [...pyroJets, ...pyroSparklers, ...smokeJets].forEach(pd => pd.object.visible = false);
+                laserFansTop.forEach(l => l.object.visible = false);
+                laserFansBottom.forEach(l => l.object.visible = false);
+                setCrowdState(CrowdMode.SWAY);
+            }
         }
 
         // is the breakdown
-        else if (1000 < t && t <= 2000){
-            movingLights.forEach(ml => ml.object.visible = true);
-            laserFansTop.forEach(lft => lft.object.visible = true);
+        else if (currentTimeFile[0] == 'breakdown'){
+            if(newStageEntered){
+                console.log("BREAKDOWN")
+
+                movingLights.forEach(ml => ml.object.visible = true);
+                laserFansTop.forEach(lft => lft.object.visible = true);
+                laserFansBottom.forEach(lfb => lfb.object.visible = true);
+                screenDevices.forEach(s => s.changeProgram(1));
+                setCrowdState(CrowdMode.BOP);
+            }
+            
             laserFansTop.forEach(lft => {lft.updateSpread(80.0 + 0.1*(t%100)); lft.update(t);}); // this 0.1 can be matched with the bpm
-            // laserFansTop.forEach(l => l.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), -Math.PI / 2 + (t%10000) * Math.PI / 2));
-            
-            laserFansBottom.forEach(lfb => lfb.object.visible = true);
             laserFansBottom.forEach(lfb => {lfb.updateSpread(80.0 + 0.1*(t%100)); lfb.update(t);});
-            // laserFansBottom.forEach(l => l.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), -Math.PI / 2 + (t%10000) * Math.PI / 2));
-            
-            screenDevices.forEach(s => s.changeProgram(1));
-            setCrowdState(CrowdMode.BOP);
         }
 
         // is the buildup
-        else if (2000 < t && t <= 3000){
-            movingLights.forEach(ml => ml.object.visible = true);
+        else if (currentTimeFile[0] == 'build-8'){
+            if(newStageEntered){
+                console.log("BUILD 8")
 
-            laserFansTop.forEach(lft => lft.object.visible = true);
+                movingLights.forEach(ml => ml.object.visible = true);
+                laserFansTop.forEach(lft => lft.object.visible = true);
+                laserFansBottom.forEach(lfb => lfb.object.visible = true);
+                screenDevices.forEach(s => s.changeProgram(2));
+                setCrowdState(CrowdMode.BOP);
+            }
+
             laserFansTop.forEach(lft => {lft.updateSpread(80.0 + 0.5*(t%100)); lft.update(t);});
-            // laserFansTop.forEach(lft => lft.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), (-Math.PI / 2) + (t%100)* Math.PI / 180));
-            
-            laserFansBottom.forEach(lfb => lfb.object.visible = true);
             laserFansBottom.forEach(lfb => {lfb.updateSpread(80.0 + 0.5*(t%100)); lfb.update(t);});
-            // laserFansBottom.forEach(lfb => lfb.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), -Math.PI / 2 + (t%100)* 25 * Math.PI / 180));
-            
-            screenDevices.forEach(s => s.changeProgram(2));
-            setCrowdState(CrowdMode.BOP);
+        }
+
+        // is the buildup
+        else if (currentTimeFile[0] == 'build-16'){
+            if(newStageEntered){
+                console.log("BUILD 16")
+
+                movingLights.forEach(ml => ml.object.visible = true);
+                laserFansTop.forEach(lft => lft.object.visible = true);
+                laserFansBottom.forEach(lfb => lfb.object.visible = true);
+                screenDevices.forEach(s => s.changeProgram(2));
+                setCrowdState(CrowdMode.BOP);
+            }
+
+            laserFansTop.forEach(lft => {lft.updateSpread(80.0 + 0.5*(t%100)); lft.update(t);});
+            laserFansBottom.forEach(lfb => {lfb.updateSpread(80.0 + 0.5*(t%100)); lfb.update(t);});
+        }
+
+        // is the buildup
+        else if (currentTimeFile[0] == 'build-32'){
+            if(newStageEntered){
+                console.log("BUILD 32")
+
+                movingLights.forEach(ml => ml.object.visible = true);
+                laserFansTop.forEach(lft => lft.object.visible = true);
+                laserFansBottom.forEach(lfb => lfb.object.visible = true);
+                screenDevices.forEach(s => s.changeProgram(2));
+                setCrowdState(CrowdMode.BOP);
+            }
+
+            laserFansTop.forEach(lft => {lft.updateSpread(80.0 + 0.5*(t%100)); lft.update(t);});
+            laserFansBottom.forEach(lfb => {lfb.updateSpread(80.0 + 0.5*(t%100)); lfb.update(t);});
+        }
+
+        // is the buildup
+        else if (currentTimeFile[0] == 'build-rest'){
+            if(newStageEntered){
+                console.log("BUILD REST")
+                movingLights.forEach(ml => ml.object.visible = true);
+                laserFansTop.forEach(lft => lft.object.visible = false);
+                laserFansBottom.forEach(lfb => lfb.object.visible = false);
+                screenDevices.forEach(s => s.setModeOff());
+                setCrowdState(CrowdMode.BOP);
+
+                crossfadeLightStrips(0xaaff00, 0x000000, 2 * t_measure);
+                crossfadeTowerLasers(0x00aaff, 0x000000, 2 * t_measure);
+            }
+
+            laserFansTop.forEach(lft => {lft.updateSpread(80.0 + 0.5*(t%100)); lft.update(t);});
+            laserFansBottom.forEach(lfb => {lfb.updateSpread(80.0 + 0.5*(t%100)); lfb.update(t);});
         }
 
         // is the drop
-        else if (3000 < t && t <= 4000){
-            pulsePyroJet(t_2note);
-            [...pyroJets, ...pyroSparklers, ...smokeJets].forEach(pd => pd.object.visible = true);
-            movingLights.forEach(ml => ml.object.visible = true);
+        else if (currentTimeFile[0] == 'drop'){
+            // pulsePyroJet(t_2note);
+            if(newStageEntered){
+                console.log("DROP");
+                crossfadeLightStrips(0xaaff00, 0x00aaff, 2 * t_measure);
+                crossfadeTowerLasers(0x00aaff, 0xaaff00, 2 * t_measure);
 
-            laserFansTop.forEach(lft => lft.object.visible = true);
+                [...pyroJets, ...pyroSparklers, ...smokeJets].forEach(pd => pd.object.visible = true);
+                movingLights.forEach(ml => ml.object.visible = true);
+                laserFansTop.forEach(lft => lft.object.visible = true);
+                laserFansBottom.forEach(lfb => lfb.object.visible = true);
+                screenDevices.forEach(s => {
+                    s.setModeAuto();
+                    s.changeProgram(3)
+                });
+                setCrowdState(CrowdMode.JUMP);
+            }
+
             laserFansTop.forEach(lft => {lft.updateSpread(70.0 + 1.2*(t%100)); lft.update(t);});
-            // laserFansTop.forEach(l => l.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), -Math.PI / 2 + (t/10.0)* 25 * Math.PI / 180));
-            laserFansBottom.forEach(lfb => lfb.object.visible = true);
             laserFansBottom.forEach(lfb => {lfb.updateSpread(70.0 + 1.2*(t%100)); lfb.update(t);});
-            // laserFansBottom.forEach(l => l.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), -Math.PI / 2 + (t/10.0)* 25 * Math.PI / 180));
-            
-            screenDevices.forEach(s => s.changeProgram(3));
-            setCrowdState(CrowdMode.JUMP);
+        } 
+
+        else {
+            if(newStageEntered){
+                console.log("OUTRO");
+                
+                laserFansTop.forEach(lft => lft.object.visible = false);
+                laserFansBottom.forEach(lfb => lfb.object.visible = false);
+                screenDevices.forEach(s => s.changeProgram(1));
+                setCrowdState(CrowdMode.BOP);
+            }
         }
     }
-    
     
     // three.js needs these funcitons to be called every time we render the scene
     controls.update();
@@ -264,22 +378,4 @@ const flashDevices = (devices: Device[], flash_duration: number, duration: numbe
     }, duration);
 }
 
-let counter = 0;
-setCrowdState(CrowdMode.BOP);
-const interval_test = () => {
-    sparkleSpotlights(t_measure);
-    pulsePyroJet(t_2note);
-
-    // if(counter % 3 == 0) setCrowdState(CrowdMode.SWAY);
-    // if(counter % 3 == 1) setCrowdState(CrowdMode.BOP);
-    // if(counter % 3 == 2) setCrowdState(CrowdMode.JUMP);
-    // counter += 1;
-
-    crossfadeLightStrips(0xaaff00, 0x00aaff, 2 * t_measure);
-    crossfadeTowerLasers(0x00aaff, 0xaaff00, 2 * t_measure);
-
-    flashDevices(towerLasers, t_16note, t_measure, false);
-}
-interval_test();
-setInterval(interval_test, 2 * t_measure);
 
