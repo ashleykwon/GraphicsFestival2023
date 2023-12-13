@@ -22,6 +22,7 @@ import { PyroJet } from './assets/create_pyro_jet';
 import { PyroJetPartial } from './assets/create_pyro_jet_partial';
 import { PyroSparklerPartial } from './assets/create_pyro_sparkler_partial';
 import { SmokeJetPartial } from './assets/create_smoke_jet_partial';
+import { cameraCurveDevices, moveCameraAlongCurve, setupCameraCurves } from './scene/setup_camera_curves';
 
 // **********************
 // INITIALIZE THREE.JS
@@ -34,7 +35,8 @@ export const scene3 = new THREE.Scene();
 scene.fog = new THREE.FogExp2(0x000000, 0.005);
 
 export const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.01, 1000 );
-camera.position.set(20, 10, 0);
+// camera.position.set(20, 10, 0);
+camera.position.set(80, 10, 0);
 const screenDimensions = [1920 * 2, 1080 * 2];
 // const screenDimensions = [1500, 700];
 
@@ -43,7 +45,7 @@ const renderer = new THREE.WebGLRenderer({
     antialias: true
 });
 renderer.setSize(screenDimensions[0], screenDimensions[1]);
-const controls = new OrbitControls(camera, renderer.domElement);
+export const controls = new OrbitControls(camera, renderer.domElement);
 controls.target = new THREE.Vector3(10, 10, 0);
 controls.update();
 
@@ -57,21 +59,22 @@ if(stageID == 0){
     setupStage();
     setupLights();
     setupCrowd();
+    setupCameraCurves();
 }
 
 else if(stageID == 1){
-    const pyroA = new PyroJetPartial([0, 0, -15], 2*800, 12, 3);
-    const pyroB = new PyroJetPartial([0, 0, -5], 2*800, 12, 2);
-    const pyroC = new PyroJetPartial([0, 0, 5], 2*800, 12, 1);
-    const pyroD = new PyroJetPartial([0, 0, 15], 2*800, 12, 0);
-    // const pyroA = new PyroSparklerPartial([0, 0, -12], 2*800, 12, 3);
-    // const pyroB = new PyroSparklerPartial([0, 0, -4], 2*800, 12, 2);
-    // const pyroC = new PyroSparklerPartial([0, 0, 4], 2*800, 12, 1);
-    // const pyroD = new PyroSparklerPartial([0, 0, 12], 2*800, 12, 0);
-    // const pyroA = new SmokeJetPartial([0, 0, -12], 2*800, 14, 3);
-    // const pyroB = new SmokeJetPartial([0, 0, -4], 2*800, 14, 2);
-    // const pyroC = new SmokeJetPartial([0, 0, 4], 2*800, 14, 1);
-    // const pyroD = new SmokeJetPartial([0, 0, 12], 2*800, 14, 0);
+    // const pyroA = new PyroJetPartial([0, 0, -15], 2*800, 12, 3);
+    // const pyroB = new PyroJetPartial([0, 0, -5], 2*800, 12, 2);
+    // const pyroC = new PyroJetPartial([0, 0, 5], 2*800, 12, 1);
+    // const pyroD = new PyroJetPartial([0, 0, 15], 2*800, 12, 0);
+    const pyroA = new PyroSparklerPartial([0, 0, -15], 2*800, 12, 3);
+    const pyroB = new PyroSparklerPartial([0, 0, -5], 2*800, 12, 2);
+    const pyroC = new PyroSparklerPartial([0, 0, 5], 2*800, 12, 1);
+    const pyroD = new PyroSparklerPartial([0, 0, 15], 2*800, 12, 0);
+    // const pyroA = new SmokeJetPartial([0, 0, -15], 2*800, 14, 3);
+    // const pyroB = new SmokeJetPartial([0, 0, -5], 2*800, 14, 2);
+    // const pyroC = new SmokeJetPartial([0, 0, 5], 2*800, 14, 1);
+    // const pyroD = new SmokeJetPartial([0, 0, 15], 2*800, 14, 0);
     pyroA.setModeOn();
     pyroB.setModeOn();
     pyroC.setModeOn();
@@ -131,12 +134,12 @@ console.log(t_measure, t_4note);
 // prep scene for main loop
 if(stageID == 0){
     const camData = localStorage.getItem("cameraPos");
-    if(camData){
-        const d = JSON.parse(camData)
-        camera.position.set(d.position.x, d.position.y, d.position.z);
-        camera.rotation.set(d.rotation._x, d.rotation._y, d.rotation._z);
-        controls.target = new THREE.Vector3(d.lookAt.x, d.lookAt.y, d.lookAt.z)
-    }
+    // if(camData){
+    //     const d = JSON.parse(camData)
+    //     camera.position.set(d.position.x, d.position.y, d.position.z);
+    //     camera.rotation.set(d.rotation._x, d.rotation._y, d.rotation._z);
+    //     controls.target = new THREE.Vector3(d.lookAt.x, d.lookAt.y, d.lookAt.z)
+    // }
 
     laserFansTop.forEach(lf => lf.setModeOff());
     laserFansBottom.forEach(lf => lf.setModeOff());
@@ -255,6 +258,8 @@ if(stageID == 0){
             lightStrips.forEach(ls => ls.update(ts));
             towerLasers.forEach(l => l.update(ts));
 
+            cameraCurveDevices.forEach(cd => cd.update(tms));
+
             cube.rotateX(0.01); // update unique objects in the scene
             cube.rotateY(0.01);
             localStorage.setItem("cameraPos", JSON.stringify({
@@ -297,6 +302,7 @@ if(stageID == 0){
                         prevIntervalLoops.push(setInterval(interval_test, 2 * t_measure))
                     }, t_measure);
                     
+                    moveCameraAlongCurve(1, (8 + 1) * t_measure);
                     // lightStrips.forEach(ls => ls.object.material.color = new THREE.Color(0xffaa00))
                 }
             }
@@ -329,6 +335,8 @@ if(stageID == 0){
                     interval_test2();
                     prevIntervalLoops.push(setInterval(interval_test, 2 * t_measure))
                     prevIntervalLoops.push(setInterval(interval_test2, 2 * t_measure))
+
+                    moveCameraAlongCurve(9, 8 * t_measure);
                 }
                 
                 laserFansTop.forEach(lft => {
@@ -365,6 +373,11 @@ if(stageID == 0){
 
                     interval_test();
                     prevIntervalLoops.push(setInterval(interval_test, 2 * t_measure))
+
+                    moveCameraAlongCurve(5, 3 * t_measure);
+                    setTimeout(() => {
+                        moveCameraAlongCurve(3, 3 * t_measure);
+                    }, 3 * t_measure);
                 }
 
                 laserFansTop.forEach(lft => {
@@ -398,6 +411,11 @@ if(stageID == 0){
                     };
                     interval_test();
                     prevIntervalLoops2.push(setInterval(interval_test, t_measure));
+
+                    moveCameraAlongCurve(7, 2 * t_measure);
+                    setTimeout(() => {
+                        moveCameraAlongCurve(8, 2 * t_measure);
+                    }, 2 * t_measure);
                 }
 
                 laserFansTop.forEach(lft => {lft.updateSpread(80.0 + 0.5*(t%100)); lft.update(t);});
@@ -490,6 +508,18 @@ if(stageID == 0){
                     prevIntervalLoops.push(setInterval(interval_test, 2 * t_measure))
                     prevIntervalLoops.push(setInterval(interval_test2, t_measure))
                     prevIntervalLoops.push(setInterval(interval_test3, 4 * t_measure))
+
+                    
+                    moveCameraAlongCurve(1, 2 * t_measure);
+                    setTimeout(() => {
+                        moveCameraAlongCurve(4, 2 * t_measure);
+                    }, 2 * t_measure);
+                    setTimeout(() => {
+                        moveCameraAlongCurve(6, 8 * t_measure);
+                    }, 4 * t_measure);
+                    setTimeout(() => {
+                        moveCameraAlongCurve(10, 4 * t_measure);
+                    }, 12 * t_measure);
                 }
 
                 laserFansTop.forEach(lft => {lft.updateSpread(70.0 + 1.2*(t%100)); lft.update(t);});
@@ -503,6 +533,8 @@ if(stageID == 0){
                     laserFansTop.forEach(lft => lft.object.visible = false);
                     laserFansBottom.forEach(lfb => lfb.object.visible = false);
                     screenDevices.forEach(s => s.changeProgram(6));
+
+                    moveCameraAlongCurve(0, 4 * t_measure);
                     setCrowdState(CrowdMode.BOP);
                 }
             }
