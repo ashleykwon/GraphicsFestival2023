@@ -15,9 +15,9 @@ import { crowd, setupCrowd } from './scene/setup_crowd';
 import { Device } from './assets/device';
 import { SpotLight } from './assets/create_spot_light';
 import { CrowdMode, setCrowdState, updateCrowd } from './scene/update_crowd';
-import { crossfadeLightStrips, crossfadeTowerLasers, sparkleSpotlights } from './scene/light_effects';
+import { crossfadeLightStrips, crossfadeMovingLights, crossfadeTowerLasers, sparkleSpotlights } from './scene/light_effects';
 
-import * as Timeline from '../assets/song.json';
+import Timeline from '../assets/song.json';
 
 // **********************
 // INITIALIZE THREE.JS
@@ -97,6 +97,8 @@ if(camData){
 laserFansTop.forEach(lf => lf.setModeOff());
 laserFansBottom.forEach(lf => lf.setModeOff());
 towerLasers.forEach(tl => tl.setModeOff());
+movingLights.forEach(ml => ml.object.color = new THREE.Color(0x004488))
+lightStrips.forEach(ls => ls.object.material.color = new THREE.Color(0xffaa00))
 
 // main loop logic
 export const BPM = Timeline.bpm;
@@ -108,12 +110,17 @@ export const t_16note = t_measure / 16;
 console.log(t_measure, t_4note);
 
 // start song trigger function
-let startAudioAtMs = 39375; // 39375;
+let startAudioAtMs = 0 - 100; // 39375;
 let attack = 0;
 let songStarted = false;
 let audio = new Audio('../assets/Yottabyte.mp3');
 audio.oncanplay = () => console.log("AUDIO LOADED")
-let timefile: [string, number[]][];
+type TimefileSlot = {
+    name: string,
+    range: number[],
+    length: number
+}
+let timefile: TimefileSlot[];
 const startSong = () => {
     audio.currentTime = startAudioAtMs / 1000;
     audio.play();
@@ -122,37 +129,42 @@ const startSong = () => {
 
     const pair_diff = (pair: number[]) => pair[1] - pair[0];
     timefile = [
-        ['intro', Timeline.first.intro],
-        ['breakdown', Timeline.first.breakdown],
-        ['build-8', Timeline.first['build-8']],
-        ['build-16', Timeline.first['build-16']],
-        ['build-32', Timeline.first['build-32']],
-        ['build-rest', Timeline.first['build-rest']],
-        ['drop', Timeline.first.drop]
-    ];
-
-    let counter = 0;
-    setCrowdState(CrowdMode.BOP);
-    const interval_test = () => {
-        sparkleSpotlights(t_measure);
-        pulsePyroJet(t_2note);
-
-        // if(counter % 3 == 0) setCrowdState(CrowdMode.SWAY);
-        // if(counter % 3 == 1) setCrowdState(CrowdMode.BOP);
-        // if(counter % 3 == 2) setCrowdState(CrowdMode.JUMP);
-        // counter += 1;
-
-        crossfadeLightStrips(0xaaff00, 0x00aaff, 2 * t_measure);
-        crossfadeTowerLasers(0x00aaff, 0xaaff00, 2 * t_measure);
-
-        flashDevices(towerLasers, t_16note, t_measure, false);
-    }
-    
-    setTimeout(() => {
-        interval_test();
-        setInterval(interval_test, 2 * t_measure)
-    }, t_measure);
-    
+        {
+            name: 'intro', 
+            range: Timeline.first.intro,
+            length: pair_diff(Timeline.first.intro)
+        }, 
+        {
+            name: 'breakdown', 
+            range: Timeline.first.breakdown,
+            length: pair_diff(Timeline.first.breakdown)
+        },
+        {
+            name: 'build-8', 
+            range: Timeline.first['build-8'],
+            length: pair_diff(Timeline.first['build-8'])
+        },
+        {
+            name: 'build-16', 
+            range: Timeline.first['build-16'],
+            length: pair_diff(Timeline.first['build-16'])
+        },
+        {
+            name: 'build-32', 
+            range: Timeline.first['build-32'],
+            length: pair_diff(Timeline.first['build-32'])
+        },
+        {
+            name: 'build-rest', 
+            range: Timeline.first['build-rest'],
+            length: pair_diff(Timeline.first['build-rest'])
+        },
+        {
+            name: 'drop', 
+            range: Timeline.first.drop,
+            length: pair_diff(Timeline.first.drop)
+        }, 
+    ];    
 }
 document.body.addEventListener('keydown', (e) => {
     if(e.key == ' ') startSong();
@@ -163,6 +175,7 @@ let frameCount = 0;
 let startTime = new Date().getTime();
 let firstRun = true;
 let currentStageName = '';
+let prevIntervalLoops: any[] = [];
 const animate = () => {
     const ms_difference = (new Date().getTime() - startTime) + startAudioAtMs;
     const t = ms_difference / 1000 * 120;
@@ -173,12 +186,12 @@ const animate = () => {
     updateCrowd(ts, firstRun, () => firstRun = false);
 
     if(songStarted){
-        let currentTimeFile = timefile.find(pair => pair[1][0] <= tms && tms <= pair[1][1]) as [string, number[]];
-        if(currentTimeFile === undefined) currentTimeFile = ['', []];
+        let currentTimeFile = timefile.find(pair => pair.range[0] <= tms && tms <= pair.range[1]) as TimefileSlot;
+        if(currentTimeFile === undefined) currentTimeFile = {name: '', range: [], length: 0};
 
         let newStageEntered = false;
-        if(currentTimeFile[0] != currentStageName) newStageEntered = true;
-        currentStageName = currentTimeFile[0];
+        if(currentTimeFile.name != currentStageName) newStageEntered = true;
+        currentStageName = currentTimeFile.name;
         
         // updating assets
         movingLights.forEach(ml => ml.update(t));
@@ -213,19 +226,43 @@ const animate = () => {
         }));
 
         // is the intro
-        if(currentTimeFile[0] == 'intro'){
+        if(currentTimeFile.name == 'intro'){
             if(newStageEntered){
                 console.log("INTRO");
 
+                prevIntervalLoops.forEach(id => clearInterval(id));
                 [...pyroJets, ...pyroSparklers, ...smokeJets].forEach(pd => pd.object.visible = false);
                 laserFansTop.forEach(l => l.object.visible = false);
                 laserFansBottom.forEach(l => l.object.visible = false);
                 setCrowdState(CrowdMode.SWAY);
+
+                setTimeout(() => {
+                    crossfadeLightStrips(0xffaa00, 0xaaff00, 2 * t_measure); 
+                    crossfadeMovingLights(0x004488, 0x00ffaa, 2 * t_measure);
+                }, t_measure);
+                setTimeout(() => {
+                    movingLights.forEach(ml => {
+                        ml.setModeOn();
+                        ml.object.color = new THREE.Color(0x00ffaa)
+                    })
+                }, 2 * t_measure);
+
+                const interval_test = () => {
+                    sparkleSpotlights(t_measure);
+                    crossfadeLightStrips(0xaaff00, 0x00aaff, 2 * t_measure);
+                    // crossfadeTowerLasers(0x00aaff, 0xaaff00, 2 * t_measure);
+                }
+                setTimeout(() => {
+                    sparkleSpotlights(t_measure);
+                    prevIntervalLoops.push(setInterval(interval_test, 2 * t_measure))
+                }, t_measure);
+                
+                // lightStrips.forEach(ls => ls.object.material.color = new THREE.Color(0xffaa00))
             }
         }
 
         // is the breakdown
-        else if (currentTimeFile[0] == 'breakdown'){
+        else if (currentTimeFile.name == 'breakdown'){
             if(newStageEntered){
                 console.log("BREAKDOWN")
 
@@ -234,6 +271,18 @@ const animate = () => {
                 laserFansBottom.forEach(lfb => lfb.object.visible = true);
                 screenDevices.forEach(s => s.changeProgram(1));
                 setCrowdState(CrowdMode.BOP);
+
+                // light color control
+
+                prevIntervalLoops.forEach(id => clearInterval(id));
+                const interval_test = () => {
+                    sparkleSpotlights(t_measure);
+                    crossfadeLightStrips(0xaa00ff, 0xff00aa, 2 * t_measure);
+                }
+                movingLights.forEach(ml => ml.object.color = new THREE.Color(0xffaa00))
+
+                interval_test();
+                prevIntervalLoops.push(setInterval(interval_test, 2 * t_measure))
             }
             
             laserFansTop.forEach(lft => {lft.updateSpread(80.0 + 0.1*(t%100)); lft.update(t);}); // this 0.1 can be matched with the bpm
@@ -241,7 +290,7 @@ const animate = () => {
         }
 
         // is the buildup
-        else if (currentTimeFile[0] == 'build-8'){
+        else if (currentTimeFile.name == 'build-8'){
             if(newStageEntered){
                 console.log("BUILD 8")
 
@@ -250,6 +299,19 @@ const animate = () => {
                 laserFansBottom.forEach(lfb => lfb.object.visible = true);
                 screenDevices.forEach(s => s.changeProgram(2));
                 setCrowdState(CrowdMode.BOP);
+
+                // light color control
+
+                prevIntervalLoops.forEach(id => clearInterval(id));
+                const interval_test = () => {
+                    crossfadeLightStrips(0xffff00, 0x0000ff, 2 * t_measure);
+                    crossfadeTowerLasers(0x0000ff, 0xffff00, 2 * t_measure);
+                    flashDevices(towerLasers, t_16note, t_measure, false);
+                }
+                movingLights.forEach(ml => ml.object.color = new THREE.Color(0xaa00ff))
+
+                interval_test();
+                prevIntervalLoops.push(setInterval(interval_test, 2 * t_measure))
             }
 
             laserFansTop.forEach(lft => {lft.updateSpread(80.0 + 0.5*(t%100)); lft.update(t);});
@@ -257,7 +319,7 @@ const animate = () => {
         }
 
         // is the buildup
-        else if (currentTimeFile[0] == 'build-16'){
+        else if (currentTimeFile.name == 'build-16'){
             if(newStageEntered){
                 console.log("BUILD 16")
 
@@ -273,7 +335,7 @@ const animate = () => {
         }
 
         // is the buildup
-        else if (currentTimeFile[0] == 'build-32'){
+        else if (currentTimeFile.name == 'build-32'){
             if(newStageEntered){
                 console.log("BUILD 32")
 
@@ -289,15 +351,16 @@ const animate = () => {
         }
 
         // is the buildup
-        else if (currentTimeFile[0] == 'build-rest'){
+        else if (currentTimeFile.name == 'build-rest'){
             if(newStageEntered){
                 console.log("BUILD REST")
                 movingLights.forEach(ml => ml.object.visible = true);
                 laserFansTop.forEach(lft => lft.object.visible = false);
                 laserFansBottom.forEach(lfb => lfb.object.visible = false);
-                screenDevices.forEach(s => s.setModeOff());
+                screenDevices.forEach(s => s.changeProgram(0));
                 setCrowdState(CrowdMode.BOP);
 
+                prevIntervalLoops.forEach(id => clearInterval(id));
                 crossfadeLightStrips(0xaaff00, 0x000000, 2 * t_measure);
                 crossfadeTowerLasers(0x00aaff, 0x000000, 2 * t_measure);
             }
@@ -307,7 +370,7 @@ const animate = () => {
         }
 
         // is the drop
-        else if (currentTimeFile[0] == 'drop'){
+        else if (currentTimeFile.name == 'drop'){
             // pulsePyroJet(t_2note);
             if(newStageEntered){
                 console.log("DROP");
@@ -323,6 +386,29 @@ const animate = () => {
                     s.changeProgram(3)
                 });
                 setCrowdState(CrowdMode.JUMP);
+
+                // light color loops
+
+                prevIntervalLoops.forEach(id => clearInterval(id));
+                const interval_test = () => {
+                    pulsePyroJet(t_measure);
+
+                    crossfadeLightStrips(0x00ff00, 0x00aaff, 2 * t_measure);
+                    crossfadeTowerLasers(0x00aaff, 0x00ff00, 2 * t_measure);
+                }
+
+                const interval_test2 = () => {
+                    flashDevices(towerLasers, t_16note, t_measure, false);
+                    sparkleSpotlights(t_measure);
+                    randomPointDevices(towerLasers, t_16note, t_measure);
+                }
+                
+                movingLights.forEach(ml => ml.object.color = new THREE.Color(0xffff00))
+
+                interval_test();
+                interval_test2();
+                prevIntervalLoops.push(setInterval(interval_test, 2 * t_measure))
+                prevIntervalLoops.push(setInterval(interval_test2, t_measure))
             }
 
             laserFansTop.forEach(lft => {lft.updateSpread(70.0 + 1.2*(t%100)); lft.update(t);});
@@ -376,6 +462,27 @@ const flashDevices = (devices: Device[], flash_duration: number, duration: numbe
         });
         clearInterval(flashLoop);
     }, duration);
+}
+
+
+const randomPointDevices = (devices: Device[], flash_duration: number, duration: number) => {
+    let flip = true;
+    let loopFunc = () => {
+        devices.forEach(d => {
+            d.object.rotation.x = 0;
+            d.object.rotation.y = 0;
+            d.object.rotation.z = 0;
+
+            d.object.rotateX((Math.random() - 0.5) * 0.2);
+            d.object.rotateY((Math.random() - 0.5) * 0.2);
+            d.object.rotateZ((Math.random() - 0.5) * 0.2);
+        });
+        flip = !flip;
+    }
+    loopFunc();
+    let flashLoop = setInterval(loopFunc, flash_duration);
+
+    setTimeout(() => clearInterval(flashLoop), duration);
 }
 
 

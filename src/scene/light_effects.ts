@@ -1,10 +1,11 @@
 import { LightStrip } from "assets/create_light_strip";
 import { SpotLight } from "../assets/create_spot_light";
 import { Device } from "../assets/device";
-import { spotLights, towerLasers } from "./setup_lights";
+import { movingLights, spotLights, towerLasers } from "./setup_lights";
 import { lightStrips } from "./setup_stage";
 import * as THREE from "three";
 import { Laser } from "assets/create_laser";
+import { MovingLight } from "assets/create_moving_light";
 
 export const sparkleSpotlights = (duration: number) => {
     let onOff = new Array(spotLights.length).fill(false);
@@ -57,6 +58,24 @@ export const crossfadeTowerLasers = (c1: number, c2: number, duration: number) =
             const fc = c1t.lerp(c2t, mix / 1000);
             laser.object.material.color = fc;
             laser.object.material.emissive = fc;
+        }, () => {}, duration);
+    });
+}
+
+export const crossfadeMovingLights = (c1: number, c2: number, duration: number) => {
+    let startTimes = new Array(movingLights.length).fill(0);
+    let durationSec = duration / 1000;
+    const c1t = new THREE.Color(c1);
+    const c2t = new THREE.Color(c2);
+
+    movingLights.forEach((ls, i) => {
+        ls.setModePlay((t: number, device: Device) => {
+            const ml = device as MovingLight;
+            if(startTimes[i] == 0) startTimes[i] = t;
+
+            const mix = (t - startTimes[i]) / durationSec;
+            const fc = c1t.lerp(c2t, mix / 1000);
+            ml.object.color = fc;
         }, () => {}, duration);
     });
 }

@@ -19,6 +19,15 @@ void main() {
 }
 `;
 
+const fragmentShaderBlack = `
+uniform float u_time;
+varying vec2 vUv;
+
+void main() {
+    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+}
+`;
+
 const fragmentShaderSolid = `
 uniform float u_time;
 varying vec2 vUv;
@@ -175,6 +184,10 @@ export class LaserScreen extends Device {
     
     changeProgram(id: number){
         this.fragShaderID = id;
+
+        if(this.fragShaderID == 0){
+            this.material.fragmentShader = fragmentShaderBlack;
+        }
 
         if(this.fragShaderID == 1){
             this.material.fragmentShader = fragmentShaderSolid;
