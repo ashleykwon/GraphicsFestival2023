@@ -25,6 +25,33 @@ export const sparkleSpotlights = (duration: number) => {
     })
 }
 
+
+
+export const pulseSparkleSpotlights = (duration: number, groups: number, pulseCount: number) => {
+    let startTimes = new Array(spotLights.length).fill(0);
+    // let ids = new Array(spotLights.length).fill(0).map(() => Math.random() * groups | 0);
+    let ids = new Array(spotLights.length).fill(0);
+    for(let i = 1; i < ids.length; i++){
+        let num = Math.random() * groups | 0;
+        while(num == ids[i - 1]){
+            num = Math.random() * groups | 0;
+        }
+        ids[i] = num;
+    }
+    let t_duration = duration / 1000 * 120;
+
+    spotLights.forEach((ls, i) => {
+        ls.setModePlay((t: number, device: Device) => {
+            const sl = device as SpotLight;
+            if(startTimes[i] == 0) startTimes[i] = t;
+
+            const mix = ((t - startTimes[i]) / t_duration) * (pulseCount / groups);
+            const curGroup = Math.floor(mix * groups) % groups;
+            sl.object.visible = ids[i] == curGroup;
+        }, () => {}, duration);
+    });
+}
+
 export const crossfadeLightStrips = (c1: number, c2: number, duration: number) => {
     let lightStripStartTimes = new Array(lightStrips.length).fill(0);
     let durationSec = duration / 1000;
@@ -51,6 +78,7 @@ export const crossfadeTowerLasers = (c1: number, c2: number, duration: number) =
 
     towerLasers.forEach((ls, i) => {
         ls.setModePlay((t: number, device: Device) => {
+            // console.log(c1, c2)
             const laser = device as Laser;
             if(startTimes[i] == 0) startTimes[i] = t;
 

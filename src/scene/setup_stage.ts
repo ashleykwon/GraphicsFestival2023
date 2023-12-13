@@ -58,13 +58,23 @@ export const setupStage = () => {
     pyroJets.push(pyro3p)
     pyroJets.push(pyro4p);
 
+    // smoke jets
+    const smokeA = new SmokeJet([-12.5, 2, 63.5 + 1], 3*800, 16);
+    const smokeB = new SmokeJet([-12.5, 2, -(63.5 + 1)], 3*800, 16);
+    const smokeC = new SmokeJet([24.5, 2, 83.5], 3*800, 16);
+    const smokeD = new SmokeJet([24.5, 2, -83.5], 3*800, 16);
+    smokeJets.push(smokeA);
+    smokeJets.push(smokeB);
+    smokeJets.push(smokeC);
+    smokeJets.push(smokeD);
+
     // [...pyroSparklers, ...pyroJets, ...smokeJets].forEach(pd => pd.setModeOn())
     // [...pyroSparklers, ...pyroJets, ...smokeJets].forEach(pd => pd.setModeOff())
 
-    pyroJets.forEach(pd => {
-        pd.emitParticles = false;
-        pd.setModeOn();
-    });
+    // pyroJets.forEach(pd => {
+    //     pd.emitParticles = false;
+    //     pd.setModeOn();
+    // });
     
     // const smoke1 = new SmokeJet([4, 0, 0], 1600, 8);
     // smoke1.setModeOn();

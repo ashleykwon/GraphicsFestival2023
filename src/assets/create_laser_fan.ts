@@ -52,7 +52,6 @@ export class LaserFan extends Device {
             l.object.material.color = nc;
             l.object.material.emmisive = ne;
             l.object.material.needsUpdate = true;
-            console.log(l.object.material.needsUpdate)
         });
     }
 

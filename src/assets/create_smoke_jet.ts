@@ -105,7 +105,7 @@ export class SmokeJet extends Device {
             positions[i + 1] = this.position[1];
             positions[i + 2] = this.position[2]; 
 
-            let s = 1.5;
+            let s = 3;
             scales[j] = (Math.random() * 0.5 + 1) * s;
             if(Math.random() > 0.98) scales[j] = (Math.random() * 2 + 2) * s;
 
@@ -129,6 +129,12 @@ export class SmokeJet extends Device {
             fragmentShader: fragmentShader,
             transparent: true
         });
+
+        const machineGeometry = new THREE.BoxGeometry(3, 3, 3);
+        const machineMaterial = new THREE.MeshStandardMaterial({color: 0xaaaaaa});
+        const machine = new THREE.Mesh(machineGeometry, machineMaterial);
+        machine.position.set(position[0], position[1], position[2]);
+        scene.add(machine);
 
         this.object = new THREE.Points(geometry, material);
         this.object.frustumCulled = false;
@@ -158,7 +164,7 @@ export class SmokeJet extends Device {
             for(let n = 0; n < NUM_PARTICLES; n++) {
                 if(positions[i + 1] === p1) startCount += 1;
 
-                if(startCount > 16 && positions[i + 1] === p1){
+                if(startCount > 8 && positions[i + 1] === p1){
 
                 } else if(!this.emitParticles && positions[i + 1] === p1){
 
@@ -169,9 +175,9 @@ export class SmokeJet extends Device {
                     const maxHeight = this.height**2;
                     const ratio = plumeHeightSq / maxHeight; // from 0 to 1
 
-                    positions[i] += (Math.random() - 0.5) * (0.1 + ratio * 0.3);
-                    positions[i + 1] += Math.random() * 0.15 // * 0.1;
-                    positions[i + 2] += (Math.random() - 0.5) * (0.1 + ratio * 0.3);
+                    positions[i] += (Math.random() - 0.5) * (0.1 + ratio * 0.3) * 2;
+                    positions[i + 1] += Math.random() * 0.3 // * 0.1;
+                    positions[i + 2] += (Math.random() - 0.5) * (0.1 + ratio * 0.3) * 2;
 
 
                     if((this.height**2) < plumeHeightSq){

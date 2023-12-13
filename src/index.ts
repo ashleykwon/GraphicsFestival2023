@@ -15,7 +15,7 @@ import { crowd, setupCrowd } from './scene/setup_crowd';
 import { Device } from './assets/device';
 import { SpotLight } from './assets/create_spot_light';
 import { CrowdMode, setCrowdState, updateCrowd } from './scene/update_crowd';
-import { crossfadeLightStrips, crossfadeMovingLights, crossfadeTowerLasers, sparkleSpotlights } from './scene/light_effects';
+import { crossfadeLightStrips, crossfadeMovingLights, crossfadeTowerLasers, pulseSparkleSpotlights, sparkleSpotlights } from './scene/light_effects';
 
 import Timeline from '../assets/song.json';
 
@@ -77,8 +77,8 @@ const outputPass = new OutputPass();
 const composer = new EffectComposer(renderer);
 composer.addPass(renderScene);
 composer.addPass(renderScene2);
-composer.addPass(bloomPass);
 composer.addPass(renderScene3);
+composer.addPass(bloomPass);
 composer.addPass(outputPass);
 
 // **********************
@@ -176,6 +176,8 @@ let startTime = new Date().getTime();
 let firstRun = true;
 let currentStageName = '';
 let prevIntervalLoops: any[] = [];
+let prevIntervalLoops2: any[] = [];
+let pulseSparsity = 6;
 const animate = () => {
     const ms_difference = (new Date().getTime() - startTime) + startAudioAtMs;
     const t = ms_difference / 1000 * 120;
@@ -235,17 +237,19 @@ const animate = () => {
                 laserFansTop.forEach(l => l.object.visible = false);
                 laserFansBottom.forEach(l => l.object.visible = false);
                 setCrowdState(CrowdMode.SWAY);
+                
+                screenDevices.forEach(s => s.changeProgram(4));
 
                 setTimeout(() => {
                     crossfadeLightStrips(0xffaa00, 0xaaff00, 2 * t_measure); 
-                    crossfadeMovingLights(0x004488, 0x00ffaa, 2 * t_measure);
+                    crossfadeMovingLights(0x004488, 0x00ffaa, 4 * t_measure);
                 }, t_measure);
                 setTimeout(() => {
                     movingLights.forEach(ml => {
                         ml.setModeOn();
                         ml.object.color = new THREE.Color(0x00ffaa)
                     })
-                }, 2 * t_measure);
+                }, 4 * t_measure);
 
                 const interval_test = () => {
                     sparkleSpotlights(t_measure);
@@ -273,20 +277,30 @@ const animate = () => {
                 setCrowdState(CrowdMode.BOP);
 
                 // light color control
-
+                
                 prevIntervalLoops.forEach(id => clearInterval(id));
                 const interval_test = () => {
-                    sparkleSpotlights(t_measure);
                     crossfadeLightStrips(0xaa00ff, 0xff00aa, 2 * t_measure);
                 }
-                movingLights.forEach(ml => ml.object.color = new THREE.Color(0xffaa00))
+                smokeJets.forEach(pd => pd.object.visible = true);
+                const interval_test2 = () => {
+                    pulseSmokeJet(t_measure * 0.5);
+                }
 
+                movingLights.forEach(ml => ml.object.color = new THREE.Color(0xffaa00))
+                sparkleSpotlights(t_measure * 0.5);
                 interval_test();
+                interval_test2();
                 prevIntervalLoops.push(setInterval(interval_test, 2 * t_measure))
+                prevIntervalLoops.push(setInterval(interval_test2, 2 * t_measure))
             }
             
-            laserFansTop.forEach(lft => {lft.updateSpread(80.0 + 0.1*(t%100)); lft.update(t);}); // this 0.1 can be matched with the bpm
-            laserFansBottom.forEach(lfb => {lfb.updateSpread(80.0 + 0.1*(t%100)); lfb.update(t);});
+            laserFansTop.forEach(lft => {
+                lft.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), -25 * Math.PI / 180);
+                lft.updateSpread(80.0 + 0.1*(t%100)); lft.update(t);}); // this 0.1 can be matched with the bpm
+            laserFansBottom.forEach(lfb => {
+                lfb.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), -25 * Math.PI / 180);
+                lfb.updateSpread(80.0 + 0.1*(t%100)); lfb.update(t);});
         }
 
         // is the buildup
@@ -297,7 +311,7 @@ const animate = () => {
                 movingLights.forEach(ml => ml.object.visible = true);
                 laserFansTop.forEach(lft => lft.object.visible = true);
                 laserFansBottom.forEach(lfb => lfb.object.visible = true);
-                screenDevices.forEach(s => s.changeProgram(2));
+                screenDevices.forEach(s => s.changeProgram(5));
                 setCrowdState(CrowdMode.BOP);
 
                 // light color control
@@ -309,6 +323,9 @@ const animate = () => {
                     flashDevices(towerLasers, t_16note, t_measure, false);
                 }
                 movingLights.forEach(ml => ml.object.color = new THREE.Color(0xaa00ff))
+                setTimeout(() => {
+                    pulseSparkleSpotlights(t_measure * 2, pulseSparsity, 8 * 2);
+                }, 2 * t_measure);
 
                 interval_test();
                 prevIntervalLoops.push(setInterval(interval_test, 2 * t_measure))
@@ -338,6 +355,13 @@ const animate = () => {
                 laserFansBottom.forEach(lfb => lfb.object.visible = true);
                 screenDevices.forEach(s => s.changeProgram(2));
                 setCrowdState(CrowdMode.BOP);
+
+                prevIntervalLoops2.forEach(id => clearInterval(id));
+                const interval_test = () => {
+                    pulseSparkleSpotlights(t_measure, pulseSparsity, 16);
+                };
+                interval_test();
+                prevIntervalLoops2.push(setInterval(interval_test, t_measure));
             }
 
             laserFansTop.forEach(lft => {lft.updateSpread(80.0 + 0.5*(t%100)); lft.update(t);});
@@ -352,8 +376,11 @@ const animate = () => {
                 movingLights.forEach(ml => ml.object.visible = true);
                 laserFansTop.forEach(lft => lft.object.visible = true);
                 laserFansBottom.forEach(lfb => lfb.object.visible = true);
-                screenDevices.forEach(s => s.changeProgram(2));
+                screenDevices.forEach(s => s.changeProgram(6));
                 setCrowdState(CrowdMode.BOP);
+
+                prevIntervalLoops2.forEach(id => clearInterval(id));
+                pulseSparkleSpotlights(t_measure, pulseSparsity, 32);
             }
 
             laserFansTop.forEach(lft => {lft.updateSpread(80.0 + 0.5*(t%100)); lft.update(t);});
@@ -367,10 +394,14 @@ const animate = () => {
                 movingLights.forEach(ml => ml.object.visible = true);
                 laserFansTop.forEach(lft => lft.object.visible = false);
                 laserFansBottom.forEach(lfb => lfb.object.visible = false);
-                screenDevices.forEach(s => s.changeProgram(0));
+                screenDevices.forEach(s => {
+                    s.object.material.uniforms.u_time.value = 0;
+                    s.changeProgram(0)
+                });
                 setCrowdState(CrowdMode.BOP);
 
                 prevIntervalLoops.forEach(id => clearInterval(id));
+                prevIntervalLoops2.forEach(id => clearInterval(id));
                 crossfadeLightStrips(0xaaff00, 0x000000, 2 * t_measure);
                 crossfadeTowerLasers(0x00aaff, 0x000000, 2 * t_measure);
             }
@@ -403,22 +434,26 @@ const animate = () => {
                 const interval_test = () => {
                     pulsePyroJet(t_measure);
 
-                    crossfadeLightStrips(0x00ff00, 0x00aaff, 2 * t_measure);
-                    crossfadeTowerLasers(0x00aaff, 0x00ff00, 2 * t_measure);
+                    crossfadeLightStrips(0x00ff00, 0xffaa00, 2 * t_measure);
+                    crossfadeTowerLasers(0xffaa00, 0x00ff00, 2 * t_measure);
                 }
-
                 const interval_test2 = () => {
                     flashDevices(towerLasers, t_16note, t_measure, false);
                     sparkleSpotlights(t_measure);
                     randomPointDevices(towerLasers, t_16note, t_measure);
+                }
+                const interval_test3 = () => {
+                    pulseSmokeJet(t_measure);
                 }
                 
                 movingLights.forEach(ml => ml.object.color = new THREE.Color(0xffff00))
 
                 interval_test();
                 interval_test2();
+                interval_test3();
                 prevIntervalLoops.push(setInterval(interval_test, 2 * t_measure))
                 prevIntervalLoops.push(setInterval(interval_test2, t_measure))
+                prevIntervalLoops.push(setInterval(interval_test3, 4 * t_measure))
             }
 
             laserFansTop.forEach(lft => {lft.updateSpread(70.0 + 1.2*(t%100)); lft.update(t);});
@@ -431,7 +466,7 @@ const animate = () => {
                 
                 laserFansTop.forEach(lft => lft.object.visible = false);
                 laserFansBottom.forEach(lfb => lfb.object.visible = false);
-                screenDevices.forEach(s => s.changeProgram(1));
+                screenDevices.forEach(s => s.changeProgram(6));
                 setCrowdState(CrowdMode.BOP);
             }
         }
@@ -448,6 +483,15 @@ animate();
 
 const pulsePyroJet = (duration: number) => {
     pyroJets.forEach(pd => {
+        pd.emitParticles = true;
+        setTimeout(() => {
+            pd.emitParticles = false;
+        }, duration);
+    })
+}
+
+const pulseSmokeJet = (duration: number) => {
+    smokeJets.forEach(pd => {
         pd.emitParticles = true;
         setTimeout(() => {
             pd.emitParticles = false;

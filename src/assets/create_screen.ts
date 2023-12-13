@@ -21,14 +21,42 @@ void main() {
 
 const fragmentShaderBlack = `
 uniform float u_time;
+uniform float planeWidth;
+uniform float planeHeight;
 varying vec2 vUv;
 
 void main() {
-    float inv_utime = (10.f - u_time) / 10.f;
+    vec2 uv = vUv - vec2(0., 0.5);
+    uv.x *= planeWidth / planeHeight;
+    
+    uv *= mat2(.707, -.707, .707, .707);
+    uv *= 4.;
+    
+    vec2 gv = fract(uv)-.5; 
+	vec2 id = floor(uv);
+    
+	float m = 0.;
+    float mb = 0.1;
+    float mg = 0.05;
+    float t;
+    for(float y=-1.; y<=1.; y++) {
+    	for(float x=-1.; x<=1.; x++) {
+            vec2 offs = vec2(x, y);
+            
+            t = -u_time+length(id-offs)*.2;
+            float r = mix(.4, 1.5, sin(t)*.5+.5);
+    		float c = smoothstep(r, r*.9, length(gv+offs));
+            
+    		m = m*(1.-c) + c*(1.-m);
+            mb = mb*(1.1-c) + c*(1.-m);
+            mg = mg*(0.9-m) + c*(0.9-c) + 0.9;
+        }
+    }
+    float inv_utime = 1.f - u_time * 0.5;
     if(inv_utime < 0.f){
         inv_utime = 0.f;
     }
-    gl_FragColor = vec4(0.01 * inv_utime, 0.01 * inv_utime, 0.01 * inv_utime, 1.0);
+    gl_FragColor = clamp(vec4(m, mg, mb, 1.0) * inv_utime, 0.0, 1.0);
 }
 `;
 
@@ -55,7 +83,6 @@ void main() {
 
 const fragmentShaderSparkle = `
 uniform float u_time;
-
 varying vec2 vUv;
 
 vec3 palette(float t){
@@ -85,7 +112,7 @@ void main() {
         finalColor += screenColor * d;
     }
     
-    gl_FragColor = 0.9*vec4(finalColor, 1.0);
+    gl_FragColor = clamp(0.9*vec4(finalColor, 1.0), 0.0, 50.0);
 }
 `;
 
@@ -122,6 +149,73 @@ void main() {
 }
 `;
 
+
+const fragmentShaderV2 = `
+uniform float u_time;
+uniform float planeWidth;
+uniform float planeHeight;
+varying vec2 vUv;
+
+void main() {
+    vec2 uv = vUv - vec2(0., 0.5);
+    uv.x *= planeWidth / planeHeight;
+
+    float r = mod(uv.x * sin(u_time * 1.7) + uv.y * cos(u_time * 0.9), 0.5f) / 0.5f;
+    float g = mod(uv.x * cos(u_time * 0.8) + uv.y * cos(u_time * 2.7), 0.8f) / 0.8f;
+    float b = mod(uv.x * cos(u_time * 1.3) + uv.y * sin(u_time * 1.1), 0.3f) / 0.3f;
+
+    gl_FragColor = clamp(1.0 - vec4(pow(r, 0.6), pow(g, 0.9), pow(b, 0.3), 0.0), 0.0, 1.0);
+}`;
+
+// https://www.shadertoy.com/view/wdlGRM
+const fragmentShaderV3 = `
+uniform float u_time;
+uniform float planeWidth;
+uniform float planeHeight;
+varying vec2 vUv;
+
+void main() {
+    vec2 uv = vUv - vec2(0., 0.5);
+    uv.x *= planeWidth / planeHeight;
+    
+    uv *= mat2(.707, -.707, .707, .707);
+    uv *= 4.;
+    
+    vec2 gv = fract(uv)-.5; 
+	vec2 id = floor(uv);
+    
+	float m = 0.;
+    float mb = 0.1;
+    float mg = 0.05;
+    float t;
+    for(float y=-1.; y<=1.; y++) {
+    	for(float x=-1.; x<=1.; x++) {
+            vec2 offs = vec2(x, y);
+            
+            t = -u_time+length(id-offs)*.2;
+            float r = mix(.4, 1.5, sin(t)*.5+.5);
+    		float c = smoothstep(r, r*.9, length(gv+offs));
+            
+    		m = m*(1.-c) + c*(1.-m);
+            mb = mb*(1.1-c) + c*(1.-m);
+            mg = mg*(0.9-m) + c*(0.9-c) + 0.9;
+        }
+    }
+
+    gl_FragColor = clamp(vec4(m, mg, mb, 1.0), 0.0, 1.0) * 0.5;
+}
+`;
+
+const fragmentShaderV1 = `
+uniform float u_time;
+varying vec2 vUv;
+
+void main() {
+    vec2 uv = vUv;
+    vec3 col = 0.5 + 0.5*cos(u_time+uv.xyx+vec3(0,2,4));
+    gl_FragColor = vec4(col, 1.0);
+}
+`;
 
 export class LaserScreen extends Device {
     position:  number[];
@@ -179,9 +273,9 @@ export class LaserScreen extends Device {
         this.setModeAuto((t: number, device: Device) => {
             if(!this.object.visible) return;
             const d = device as LaserScreen;
-            if (d.object.material.uniforms.u_time.value >= 2.0){
-                d.object.material.uniforms.u_time.value = 0;
-            }
+            // if (d.object.material.uniforms.u_time.value >= 2.0){
+            //    d.object.material.uniforms.u_time.value = 0;
+            // }
             d.object.material.uniforms.u_time.value += 0.01;
         });
     }
@@ -203,6 +297,18 @@ export class LaserScreen extends Device {
         
         else if(this.fragShaderID == 3){
             this.material.fragmentShader = fragmentShaderSparkle;
+        }
+
+        else if(this.fragShaderID == 4){
+            this.material.fragmentShader = fragmentShaderV1;
+        }
+
+        else if(this.fragShaderID == 5){
+            this.material.fragmentShader = fragmentShaderV2;
+        }
+
+        else if(this.fragShaderID == 6){
+            this.material.fragmentShader = fragmentShaderV3;
         }
 
         this.material.needsUpdate = true;
