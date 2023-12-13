@@ -22,6 +22,7 @@ import { PyroJet } from './assets/create_pyro_jet';
 import { PyroJetPartial } from './assets/create_pyro_jet_partial';
 import { PyroSparklerPartial } from './assets/create_pyro_sparkler_partial';
 import { SmokeJetPartial } from './assets/create_smoke_jet_partial';
+import { LaserScreen } from './assets/create_screen';
 
 // **********************
 // INITIALIZE THREE.JS
@@ -47,7 +48,7 @@ const controls = new OrbitControls(camera, renderer.domElement);
 controls.target = new THREE.Vector3(10, 10, 0);
 controls.update();
 
-let stageID = 0;
+let stageID = 2;
 
 // **********************
 // SET UP SCENE
@@ -81,6 +82,31 @@ else if(stageID == 1){
     pyroJets.push(pyroC);
     pyroJets.push(pyroD);
 }
+
+else if (stageID == 2){
+    // Intro
+    const screen1 = new LaserScreen([0, 5, 10], [1, 0, 0], 5, 10, 4);
+    
+    // Breakdown
+    const screen2 = new LaserScreen([0, 5, 3], [1, 0, 0], 5, 10, 1);
+
+    // Build 8
+    const screen3 = new LaserScreen([0, 5, -4], [1, 0, 0], 5, 10, 5);
+
+    // Build 16, Random colors
+    const screen4 = new LaserScreen([0, 7.75, -11], [1, 0, 0], 5, 4.5, 2);
+    const screen4V2 = new LaserScreen([0, 2, -11], [1, 0, 0], 5, 4.5, 2);
+    
+    // Build 32, Outro
+    const screen5 = new LaserScreen([0, 5, -18], [1, 0, 0], 5, 10, 6);
+
+    // Drop
+    const screen6 = new LaserScreen([0, 5, -25], [1, 0, 0], 5, 10, 3);
+
+    screenDevices.push(screen1, screen2, screen3);
+    screenDevices.push(screen4, screen4V2, screen5, screen6);
+}
+
 
 // **********************
 // RENDER + SHADER PASSES
@@ -599,6 +625,34 @@ else if(stageID == 1){
             }); 
         }
 
+        controls.update();
+        composer.render();
+
+        frameCount += 1;
+        requestAnimationFrame(animate);
+    }
+    animate();
+}
+
+else if(stageID == 2){
+    let started = false;
+    document.body.addEventListener('keydown', (e) => {
+        if(e.key == ' ') started = true;
+    });
+
+    let frameCount = 0;
+    let startTime = new Date().getTime();
+
+    const animate = () => {
+        if(started){
+            const ms_difference = (new Date().getTime() - startTime);
+            const t = ms_difference / 1000 * 120;
+            const tms = ms_difference;
+            const ts = tms / 1000;
+    
+            
+        }
+        screenDevices.forEach(d => d.update(frameCount));
         controls.update();
         composer.render();
 

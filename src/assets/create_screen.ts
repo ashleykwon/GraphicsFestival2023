@@ -84,6 +84,8 @@ void main() {
 const fragmentShaderSparkle = `
 uniform float u_time;
 varying vec2 vUv;
+uniform float planeWidth;
+uniform float planeHeight;
 
 vec3 palette(float t){
     vec3 a = vec3(0.358, -0.042, 0.358);
@@ -97,7 +99,8 @@ void main() {
     float angle = u_time*0.3;
     vec2 normalizedCoord = -1.0 + 2.0 *vUv *2.0 - 1.0; // -1 to 1
     vec2 originalUV = normalizedCoord;
-    normalizedCoord[1] /= 2.0;
+
+    normalizedCoord[0] *= planeWidth / planeHeight;
     vec3 finalColor = vec3(0.0);
 
     for (float i = 0.0; i < 3.0; i++){ // 3 is the number of fractal layers
@@ -257,6 +260,18 @@ export class LaserScreen extends Device {
         }
         if (fragShaderID == 3){
             material.fragmentShader = fragmentShaderSparkle;
+        }
+
+        else if(fragShaderID == 4){
+            material.fragmentShader = fragmentShaderV1;
+        }
+
+        else if(fragShaderID == 5){
+            material.fragmentShader = fragmentShaderV2;
+        }
+
+        else if(fragShaderID == 6){
+            material.fragmentShader = fragmentShaderV3;
         }
 
         this.object = new THREE.Mesh(geometry, material);
