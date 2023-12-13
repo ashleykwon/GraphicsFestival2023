@@ -230,13 +230,4 @@ export const setupLights = () => {
     laserFansBottom.push(laserfanMC)
 
     // laserLights.forEach(l => l.setModeOff())
-
-    // ************
-    // spot lights
-    // const spotlight1 = new SpotLight(
-    //     0xffff00, 0.2, 
-    //     [-4, 8, -2], [1, -1, 0]
-    // );
-    // spotlight1.setModeOn(); 
-    // movingLights.push(spotlight1);
 }

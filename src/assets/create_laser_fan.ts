@@ -44,6 +44,18 @@ export class LaserFan extends Device {
         this.setModeOff();
     }
 
+    changeColor(color: number){
+        const nc = new THREE.Color(color);
+        const ne = new THREE.Color(color);
+        this.lasers.forEach(l => {
+            // console.log(l)
+            l.object.material.color = nc;
+            l.object.material.emmisive = ne;
+            l.object.material.needsUpdate = true;
+            console.log(l.object.material.needsUpdate)
+        });
+    }
+
     updateSpread(angle?: number){
         if(angle === undefined) angle = this.spreadAngle
         for(let i = 0; i < this.numLasers; i++){

@@ -24,7 +24,11 @@ uniform float u_time;
 varying vec2 vUv;
 
 void main() {
-    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+    float inv_utime = (10.f - u_time) / 10.f;
+    if(inv_utime < 0.f){
+        inv_utime = 0.f;
+    }
+    gl_FragColor = vec4(0.01 * inv_utime, 0.01 * inv_utime, 0.01 * inv_utime, 1.0);
 }
 `;
 

@@ -314,8 +314,18 @@ const animate = () => {
                 prevIntervalLoops.push(setInterval(interval_test, 2 * t_measure))
             }
 
-            laserFansTop.forEach(lft => {lft.updateSpread(80.0 + 0.5*(t%100)); lft.update(t);});
-            laserFansBottom.forEach(lfb => {lfb.updateSpread(80.0 + 0.5*(t%100)); lfb.update(t);});
+            laserFansTop.forEach(lft => {
+                lft.changeColor(0xff0000);
+                lft.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), -25 * Math.PI / 180);
+                lft.updateSpread(80.0 + 0.5*(t%100)); 
+                lft.update(t);
+            });
+            laserFansBottom.forEach(lfb => {
+                lfb.changeColor(0xff0000);
+                lfb.object.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), -25 * Math.PI / 180);
+                lfb.updateSpread(80.0 + 0.5*(t%100)); 
+                lfb.update(t);
+            });
         }
 
         // is the buildup
