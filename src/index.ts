@@ -37,7 +37,7 @@ scene.fog = new THREE.FogExp2(0x000000, 0.005);
 
 export const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.01, 1000 );
 // camera.position.set(20, 10, 0);
-camera.position.set(80, 10, 0);
+camera.position.set(100, 5, 0);
 const screenDimensions = [1920 * 2, 1080 * 2];
 // const screenDimensions = [1500, 700];
 
@@ -47,10 +47,10 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.setSize(screenDimensions[0], screenDimensions[1]);
 export const controls = new OrbitControls(camera, renderer.domElement);
-controls.target = new THREE.Vector3(10, 10, 0);
+controls.target = new THREE.Vector3(0, 10, 0);
 controls.update();
 
-let stageID = 2;
+let stageID = 0;
 
 // **********************
 // SET UP SCENE
