@@ -16,6 +16,10 @@
 Josh:
 - Shadertoy documentation
 - Shadertoy pattern reference: https://www.shadertoy.com/view/wdlGRM
+- Time-synchronized shader tutorials:
+  * https://www.youtube.com/watch?v=f4s1h2YETNY
+  * https://www.youtube.com/watch?v=8bbTkNZYdQ8
+- Color palette generation: http://dev.thi.ng/gradients/  
 - LearnOpenGL: https://learnopengl.com/
 - Three.js documentation: https://threejs.org/docs/
 - Three.js postprocessing example: https://threejs.org/examples/?q=bloom#webgl_postprocessing_unreal_bloom
