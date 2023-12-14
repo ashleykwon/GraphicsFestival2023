@@ -11,6 +11,9 @@
 2. Open `/js/index.html` in the browser and *wait* for CDN to finish downloading Three.js library files
 3. Music graphics time (**press the spacebar to start**)!
 
+## Music Segmentation
+https://colab.research.google.com/drive/1JN1NiHjCTheVS-sfa3A2hiIQeGSUH_qa?usp=sharing 
+
 ## SOURCE / CREDITS:
 
 - Shadertoy documentation
