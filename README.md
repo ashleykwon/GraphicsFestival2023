@@ -13,7 +13,6 @@
 
 ## SOURCE / CREDITS:
 
-Josh:
 - Shadertoy documentation
 - Shadertoy pattern reference: https://www.shadertoy.com/view/wdlGRM
 - Time-synchronized shader tutorials:
