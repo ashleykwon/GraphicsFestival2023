@@ -23,3 +23,8 @@
 - Three.js documentation: https://threejs.org/docs/
 - Three.js postprocessing example: https://threejs.org/examples/?q=bloom#webgl_postprocessing_unreal_bloom
 - Three.js particle example: https://threejs.org/examples/?q=particle#webgl_points_dynamic
+- Librosa: https://librosa.org/doc/latest/index.html 
+- Laplacian Segmentation Implementation: https://librosa.org/librosa_gallery/auto_examples/plot_segmentation.html 
+- Paper: https://brianmcfee.net/papers/ismir2014_spectral.pdf
+- Spotify API: https://developer.spotify.com/documentation/web-api/reference/get-audio-features
+- Beatport: https://www.beatport.com/
