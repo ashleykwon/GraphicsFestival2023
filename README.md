@@ -12,3 +12,11 @@
 3. Music graphics time!
 
 ## SOURCE / CREDITS:
+
+Josh:
+- Shadertoy documentation
+- Shadertoy pattern reference: https://www.shadertoy.com/view/wdlGRM
+- LearnOpenGL: https://learnopengl.com/
+- Three.js documentation: https://threejs.org/docs/
+- Three.js postprocessing example: https://threejs.org/examples/?q=bloom#webgl_postprocessing_unreal_bloom
+- Three.js particle example: https://threejs.org/examples/?q=particle#webgl_points_dynamic
